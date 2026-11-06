@@ -1,0 +1,1 @@
+window.LEILAO_CONFIG = {"repo": "1709-2005/leilao-dados", "nome_leilao": "Leilão Detran-DF", "acesso": {"sal": "C/Hu3aUZ2HxQG0KxhMpyXw==", "iv": "EQt+VMQYHO9D7Rl8", "iteracoes": 600000, "cifra": "pkhZaElBglxBkAHhRkfrt9ti0Ev5JdXH5E4omUtmigRLibH3mfBlIEmPYQmfUAI01+c7w6Sfq6Gj8evdk0/QvKyYUCw8qK7XoI0IOMOMOREQ/iktIlQoVRz+Nxe8drDwHNyPZEx1+gVDQl5z0g=="}};

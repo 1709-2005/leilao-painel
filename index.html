@@ -1,0 +1,1674 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leilão Detran-DF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Conceito: catálogo de pátio. O número do lote é uma placa Mercosul, e cada carro
+   responde em um olhar quanto custa agora e quanto sobra na venda pessimista. */
+:root {
+  --fundo: #edf0f4; --superficie: #ffffff; --superficie-2: #f3f5f8; --linha: #d7dde5; --linha-forte: #b4bdc9;
+  --texto: #17212d; --suave: #5a6777; --acento: #0b4fb3; --acento-fundo: #e2ecfa;
+  --bom: #0a7349; --bom-fundo: #dcf3e8; --atencao: #8f5b00; --atencao-fundo: #fbeed3;
+  --ruim: #b3261e; --ruim-fundo: #fae3e0; --cobertura: rgba(15, 24, 35, .58);
+  --placa-azul: #0d3f9e; --placa-branco: #ffffff; --placa-texto: #101820;
+  --sombra: 0 1px 2px rgba(23, 33, 45, .07); --sombra-alta: 0 18px 50px rgba(15, 24, 35, .28);
+  --fonte: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --fonte-numero: "Barlow Semi Condensed", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fundo: #10161d; --superficie: #19222c; --superficie-2: #212c38; --linha: #2c3846; --linha-forte: #475566;
+    --texto: #e9eef4; --suave: #98a6b6; --acento: #79aeff; --acento-fundo: #1b3050;
+    --bom: #4fd19b; --bom-fundo: #15352a; --atencao: #eebb62; --atencao-fundo: #3a2d14;
+    --ruim: #f58b82; --ruim-fundo: #41211e; --cobertura: rgba(4, 8, 12, .7);
+    --sombra: none; --sombra-alta: 0 18px 50px rgba(0, 0, 0, .55); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fundo: #10161d; --superficie: #19222c; --superficie-2: #212c38; --linha: #2c3846; --linha-forte: #475566;
+  --texto: #e9eef4; --suave: #98a6b6; --acento: #79aeff; --acento-fundo: #1b3050;
+  --bom: #4fd19b; --bom-fundo: #15352a; --atencao: #eebb62; --atencao-fundo: #3a2d14;
+  --ruim: #f58b82; --ruim-fundo: #41211e; --cobertura: rgba(4, 8, 12, .7);
+  --sombra: none; --sombra-alta: 0 18px 50px rgba(0, 0, 0, .55); color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--fundo); color: var(--texto); font: 400 14px/1.45 var(--fonte); }
+body.travado { overflow: hidden; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--acento); }
+h1, h2, h3, p { margin: 0; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+input, select, textarea {
+  width: 100%; min-height: 36px; padding: 6px 10px; background: var(--superficie);
+  border: 1px solid var(--linha-forte); border-radius: 6px;
+}
+input::placeholder, textarea::placeholder { color: var(--suave); opacity: .85; }
+.num { font-variant-numeric: tabular-nums; }
+.rotulo { display: block; font-size: 12px; font-weight: 500; color: var(--suave); }
+.campo { display: grid; gap: 4px; font-size: 12px; font-weight: 500; color: var(--suave); }
+.campo > input, .campo > select, .campo > textarea, .campo > .dupla { color: var(--texto); font-size: 14px; font-weight: 400; }
+.dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.trio { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px 12px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 6px 12px;
+  background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: 6px; font-weight: 500;
+  text-decoration: none; color: var(--texto); white-space: nowrap; }
+.btn:hover:not(:disabled) { background: var(--superficie-2); }
+.btn:disabled { opacity: .6; cursor: default; }
+.btn.primario { background: var(--acento); border-color: var(--acento); color: var(--superficie); font-weight: 600; }
+.btn.primario:hover:not(:disabled) { background: var(--acento); filter: brightness(1.1); }
+.btn.icone { width: 36px; padding: 0; font-size: 16px; }
+.btn.discreto { background: none; border-color: transparent; color: var(--acento); }
+.btn.discreto:hover:not(:disabled) { background: var(--acento-fundo); }
+
+/* placa Mercosul do lote */
+.placa { display: inline-grid; min-width: 52px; text-align: center; background: var(--placa-branco); color: var(--placa-texto);
+  border: 1px solid rgba(16, 24, 32, .45); border-radius: 4px; overflow: hidden; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.placa small { background: var(--placa-azul); color: var(--placa-branco); font: 600 8.5px/1 var(--fonte); letter-spacing: .12em; padding: 2px 6px; }
+.placa b { font: 700 18px/1 var(--fonte-numero); padding: 3px 7px 3px; font-variant-numeric: tabular-nums; }
+.placa.grande { min-width: 68px; }
+.placa.grande small { font-size: 9.5px; padding: 3px 8px; }
+.placa.grande b { font-size: 26px; }
+
+/* topo */
+.topo { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;
+  padding: 10px 20px; background: var(--superficie); border-bottom: 1px solid var(--linha); }
+.topo h1 { font: 700 22px/1.1 var(--fonte-numero); letter-spacing: .005em; }
+.topo .sub { color: var(--suave); font-size: 13px; }
+.topo-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto; }
+.status { display: inline-flex; align-items: center; gap: 7px; color: var(--suave); font-size: 13px; margin-right: 4px; }
+.status i { width: 8px; height: 8px; border-radius: 50%; background: var(--bom); }
+.status.atencao i { background: var(--atencao); } .status.ruim i { background: var(--ruim); }
+.status.ativo i { background: var(--acento); animation: pulso 1.2s ease-in-out infinite; }
+@keyframes pulso { 50% { opacity: .35; } }
+
+.avisos { display: grid; gap: 0; }
+.aviso { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; padding: 8px 20px; font-size: 13.5px;
+  background: var(--atencao-fundo); color: var(--atencao); border-bottom: 1px solid var(--linha); }
+.aviso.erro { background: var(--ruim-fundo); color: var(--ruim); }
+.aviso .btn { min-height: 28px; padding: 2px 10px; background: transparent; border-color: currentColor; color: inherit; }
+
+/* estrutura */
+.corpo { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
+.corpo.com-filtros { grid-template-columns: 264px minmax(0, 1fr); }
+.corpo:not(.com-filtros) .filtros { display: none; }
+.filtros { position: sticky; top: 61px; max-height: calc(100vh - 61px); overflow-y: auto; padding: 16px 16px 24px 20px;
+  display: grid; gap: 18px; scrollbar-width: thin; }
+.filtros-rodape { display: none; }
+.grupo { display: grid; gap: 10px; }
+.grupo > h2 { font: 600 11.5px/1 var(--fonte); text-transform: uppercase; letter-spacing: .08em; color: var(--suave); }
+.check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer; }
+.check input { width: 16px; height: 16px; min-height: 0; margin: 0; accent-color: var(--acento); }
+.conteudo { min-width: 0; padding: 16px 20px 48px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-content: start; }
+.corpo.com-filtros .conteudo { padding-left: 8px; }
+
+/* minha lista */
+.minha-lista { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; padding: 10px 14px; background: var(--superficie);
+  border: 1px solid var(--linha); border-radius: 8px; }
+.minha-lista h2 { font: 700 15px/1 var(--fonte-numero); }
+.minha-lista div b { display: block; font: 700 18px/1.15 var(--fonte-numero); font-variant-numeric: tabular-nums; }
+.minha-lista div span { color: var(--suave); font-size: 12px; }
+
+/* abas e barra */
+.abas { display: flex; gap: 2px; overflow-x: auto; border-bottom: 1px solid var(--linha); scrollbar-width: none; }
+.abas button { flex: none; display: inline-flex; gap: 6px; padding: 7px 12px 8px; background: none; border: 0;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; color: var(--suave); font-weight: 500; }
+.abas button:hover { color: var(--texto); }
+.abas button[aria-pressed="true"] { color: var(--acento); border-bottom-color: var(--acento); font-weight: 600; }
+.abas .qtd { font-variant-numeric: tabular-nums; font-size: 12.5px; opacity: .8; }
+.barra { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.barra .busca { flex: 1 1 240px; min-width: 0; }
+.barra .ordem { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--suave); white-space: nowrap; }
+.barra .ordem select { width: auto; color: var(--texto); }
+#btn-filtros::after { content: "▾"; font-size: 12px; }
+#btn-filtros[aria-expanded="true"] { background: var(--acento-fundo); border-color: var(--acento); color: var(--acento); }
+#btn-filtros[aria-expanded="true"]::after { content: "▴"; }
+.alternar { display: inline-flex; border: 1px solid var(--linha-forte); border-radius: 6px; overflow: hidden; }
+.alternar button { min-height: 34px; padding: 4px 12px; border: 0; background: var(--superficie); font-weight: 500; color: var(--suave); }
+.alternar button[aria-pressed="true"] { background: var(--acento-fundo); color: var(--acento); font-weight: 600; }
+.ativos { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; color: var(--suave); }
+.ativos > b { color: var(--texto); font-weight: 600; margin-right: 4px; }
+.filtro-ativo { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; background: var(--acento-fundo); color: var(--acento);
+  border: 0; border-radius: 4px; font-size: 12.5px; font-weight: 500; }
+.filtro-ativo::after { content: "✕"; font-size: 10px; }
+.limpar { background: none; border: 0; color: var(--acento); font-size: 12.5px; padding: 2px 4px; text-decoration: underline; }
+
+/* cartões */
+.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(272px, 1fr)); gap: 14px; }
+.cartao { position: relative; display: flex; flex-direction: column; background: var(--superficie); border: 1px solid var(--linha);
+  border-radius: 8px; overflow: hidden; box-shadow: var(--sombra); cursor: pointer; content-visibility: auto; contain-intrinsic-size: auto 470px; }
+.cartao:hover { border-color: var(--linha-forte); }
+.cartao.m-interesse { border-color: var(--bom); box-shadow: 0 0 0 1px var(--bom); }
+.cartao.m-talvez { border-color: var(--atencao); box-shadow: 0 0 0 1px var(--atencao); }
+.cartao.m-descartado { opacity: .62; }
+.cartao.m-descartado img { filter: grayscale(1); }
+.foto { position: relative; aspect-ratio: 16 / 10; background: var(--superficie-2); }
+.foto img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.foto .placa { position: absolute; top: 8px; left: 8px; }
+.foto .qtd-fotos { position: absolute; right: 8px; bottom: 8px; padding: 1px 7px; border-radius: 4px; background: rgba(10, 16, 22, .74); color: #fff; font-size: 12px; font-weight: 500; }
+.foto .sem-foto { position: absolute; inset: 0; display: grid; place-items: center; color: var(--suave); font-size: 13px; }
+.foto .selo-marca { position: absolute; top: 8px; right: 8px; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+.selo-marca.interesse { background: var(--bom); color: var(--superficie); }
+.selo-marca.talvez { background: var(--atencao); color: var(--superficie); }
+.selo-marca.descartado { background: var(--suave); color: var(--superficie); }
+.miolo { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 11px 12px 12px; }
+.miolo h3 { font: 700 17px/1.15 var(--fonte-numero); letter-spacing: .005em; overflow-wrap: anywhere; }
+.meta { color: var(--suave); font-size: 12.5px; line-height: 1.35; margin-top: 2px; }
+.etiquetas { display: flex; flex-wrap: wrap; gap: 4px; }
+.etiqueta { padding: 0 6px; border-radius: 4px; background: var(--superficie-2); font-size: 12px; font-weight: 500; line-height: 1.6; }
+.etiqueta.atencao { background: var(--atencao-fundo); color: var(--atencao); }
+.etiqueta.ruim { background: var(--ruim-fundo); color: var(--ruim); }
+.etiqueta.tag { background: var(--acento-fundo); color: var(--acento); }
+.numeros { display: grid; grid-template-columns: auto auto; justify-content: space-between; gap: 8px; margin-top: auto; }
+.numeros > div:last-child { text-align: right; }
+.valor { display: block; font: 700 23px/1.1 var(--fonte-numero); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.valor.pos { color: var(--bom); } .valor.neg { color: var(--ruim); }
+.nota-sub { font-size: 12px; color: var(--suave); white-space: nowrap; }
+.margem { position: relative; height: 6px; border-radius: 3px; background: var(--bom-fundo); box-shadow: inset 0 0 0 1px var(--linha); }
+.margem i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--suave); }
+.margem.neg i { background: var(--ruim); }
+.margem u { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--texto); }
+.legenda { display: flex; justify-content: space-between; gap: 8px; font: 500 12.5px/1.2 var(--fonte-numero); color: var(--suave); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.legenda b { color: var(--texto); font-weight: 600; }
+.sem-fipe { font-size: 12.5px; color: var(--suave); }
+.nota-previa { padding: 5px 8px; background: var(--superficie-2); border-radius: 4px; font-size: 12.5px; white-space: pre-line;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.acoes { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--linha); }
+.acoes button { min-height: 36px; background: none; border: 0; font-size: 13px; font-weight: 500; color: var(--suave); }
+.acoes button + button { border-left: 1px solid var(--linha); }
+.acoes button:hover { background: var(--superficie-2); color: var(--texto); }
+.on-interesse { background: var(--bom-fundo) !important; color: var(--bom) !important; font-weight: 600 !important; }
+.on-talvez { background: var(--atencao-fundo) !important; color: var(--atencao) !important; font-weight: 600 !important; }
+.on-descartado { background: var(--ruim-fundo) !important; color: var(--ruim) !important; font-weight: 600 !important; }
+
+/* tabela */
+.tabela-caixa { max-height: calc(100vh - 210px); overflow: auto; background: var(--superficie); border: 1px solid var(--linha); border-radius: 8px; }
+table.lotes { width: 100%; border-collapse: separate; border-spacing: 0; }
+.lotes th { position: sticky; top: 0; z-index: 1; padding: 8px; background: var(--superficie-2); border-bottom: 1px solid var(--linha-forte);
+  font-size: 12px; font-weight: 600; color: var(--suave); text-align: left; white-space: nowrap; }
+.lotes th button { padding: 0; background: none; border: 0; font-weight: 600; color: inherit; white-space: nowrap; }
+.lotes th button:hover, .lotes th button[aria-pressed="true"] { color: var(--acento); }
+.lotes td { padding: 6px 8px; border-bottom: 1px solid var(--linha); vertical-align: middle; }
+.lotes .dir { text-align: right; white-space: nowrap; }
+.lotes tbody tr { cursor: pointer; }
+.lotes tbody tr:hover td { background: var(--superficie-2); }
+.lotes tr.m-interesse td:first-child { box-shadow: inset 3px 0 0 var(--bom); }
+.lotes tr.m-talvez td:first-child { box-shadow: inset 3px 0 0 var(--atencao); }
+.lotes tr.m-descartado { opacity: .55; }
+.lotes img, .lotes .mini-vazia { display: block; width: 66px; height: 44px; object-fit: cover; border-radius: 4px; background: var(--superficie-2); }
+.lotes .nlote, .lotes .forte { font: 700 16px/1 var(--fonte-numero); font-variant-numeric: tabular-nums; }
+.lotes .veic { min-width: 170px; }
+.lotes .veic b { font: 700 14.5px/1.15 var(--fonte-numero); }
+.lotes .pos { color: var(--bom); } .lotes .neg { color: var(--ruim); }
+.lotes .nota { max-width: 110px; overflow: hidden; color: var(--suave); font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
+.aprox { color: var(--atencao); font-weight: 600; }
+
+.vazio { display: grid; justify-items: center; gap: 10px; padding: 64px 20px; text-align: center; color: var(--suave); }
+
+/* ficha do lote */
+.cobertura { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 20px; background: var(--cobertura); }
+.ficha { display: grid; grid-template-rows: auto minmax(0, 1fr); width: min(1280px, 100%); height: min(860px, 100%);
+  background: var(--superficie); border-radius: 10px; overflow: hidden; box-shadow: var(--sombra-alta); }
+.ficha-topo { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--linha); }
+.ficha-titulo { flex: 1; min-width: 0; }
+.ficha-titulo h2 { font: 700 21px/1.1 var(--fonte-numero); overflow-wrap: anywhere; }
+.ficha-acoes { display: flex; align-items: center; gap: 6px; }
+.salvo { font-size: 12.5px; color: var(--suave); margin-right: 6px; white-space: nowrap; }
+.ficha-corpo { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); min-height: 0; }
+.coluna { min-height: 0; overflow-y: auto; padding: 14px; display: grid; grid-auto-rows: max-content; gap: 16px; scrollbar-width: thin; }
+.coluna + .coluna { border-left: 1px solid var(--linha); background: var(--superficie-2); }
+.foto-grande { position: relative; aspect-ratio: 16 / 10; max-width: 100%; background: #0b0f14; border-radius: 6px; overflow: hidden; }
+.foto-grande img { display: block; width: 100%; height: 100%; object-fit: contain; cursor: zoom-in; }
+.seta { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 54px; background: rgba(10, 16, 22, .62); color: #fff; border: 0; border-radius: 5px; font-size: 20px; line-height: 1; }
+.seta:hover { background: rgba(10, 16, 22, .86); }
+.seta.ant { left: 8px; } .seta.prox { right: 8px; }
+.pos-foto { position: absolute; right: 8px; bottom: 8px; padding: 1px 8px; border-radius: 4px; background: rgba(10, 16, 22, .74); color: #fff; font-size: 12.5px; }
+.miniaturas { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 5px; margin-top: 6px; }
+.miniaturas img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 4px; cursor: pointer; opacity: .78; }
+.miniaturas img:hover { opacity: 1; }
+.miniaturas img.ativa { opacity: 1; outline: 2px solid var(--acento); outline-offset: 1px; }
+.sem-fotos { padding: 40px 16px; text-align: center; background: var(--superficie-2); border-radius: 6px; color: var(--suave); }
+.secao > h3 { margin-bottom: 8px; font: 600 11.5px/1 var(--fonte); text-transform: uppercase; letter-spacing: .08em; color: var(--suave); }
+dl.campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 20px; margin: 0; }
+dl.campos > div { display: grid; grid-template-columns: 110px 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--linha); }
+dl.campos dt { color: var(--suave); font-size: 13px; } dl.campos dd { margin: 0; overflow-wrap: anywhere; }
+dl.campos > div.largo { grid-column: 1 / -1; }
+table.hist { width: 100%; border-collapse: collapse; font-size: 13px; }
+.hist th, .hist td { padding: 4px 0; text-align: right; border-bottom: 1px solid var(--linha); }
+.hist th:first-child, .hist td:first-child { text-align: left; }
+.hist th { color: var(--suave); font-weight: 500; font-size: 12px; }
+.marcador { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--linha-forte); border-radius: 6px; overflow: hidden; background: var(--superficie); }
+.marcador button { min-height: 40px; background: none; border: 0; font-weight: 500; }
+.marcador button + button { border-left: 1px solid var(--linha-forte); }
+.marcador button:hover { background: var(--superficie-2); }
+.resumo-preco { display: grid; grid-template-columns: auto auto; justify-content: space-between; gap: 12px; }
+.resumo-preco > div:last-child { text-align: right; }
+.resumo-preco .valor { font-size: 30px; }
+.bloco { display: grid; gap: 10px; padding: 12px; background: var(--superficie); border: 1px solid var(--linha); border-radius: 8px; }
+.bloco > h3 { font: 600 11.5px/1 var(--fonte); text-transform: uppercase; letter-spacing: .08em; color: var(--suave); }
+.versao-fipe { display: grid; gap: 4px; }
+.versao-fipe .nome { font-weight: 500; }
+.selo { font-size: 12px; font-weight: 600; padding: 0 6px; border-radius: 4px; white-space: nowrap; }
+.selo.alta, .selo.manual { background: var(--bom-fundo); color: var(--bom); }
+.selo.media { background: var(--atencao-fundo); color: var(--atencao); }
+.selo.baixa, .selo.nao_achei { background: var(--ruim-fundo); color: var(--ruim); }
+table.conta { width: 100%; border-collapse: collapse; }
+.conta td { padding: 3px 0; }
+.conta td:last-child { text-align: right; white-space: nowrap; }
+.conta tr.total td { padding-top: 8px; border-top: 1px solid var(--linha-forte); font: 700 21px/1.1 var(--fonte-numero); }
+.conta tr.total td:first-child { font-size: 16px; }
+.conta tr.total.pos td { color: var(--bom); } .conta tr.total.neg td { color: var(--ruim); }
+.dica { color: var(--suave); font-size: 12.5px; }
+.falta { color: var(--atencao); font-size: 12.5px; }
+.link { padding: 0; background: none; border: 0; color: var(--acento); text-decoration: underline; font-size: inherit; }
+.alertas { display: grid; gap: 4px; }
+.alerta { padding: 4px 8px; border-radius: 4px; font-size: 12.5px; font-weight: 500; }
+.alerta.ruim { background: var(--ruim-fundo); color: var(--ruim); }
+.alerta.atencao { background: var(--atencao-fundo); color: var(--atencao); }
+#a-notas { min-height: 96px; resize: vertical; }
+
+/* serviços */
+.drop summary { display: flex; justify-content: space-between; align-items: center; min-height: 36px; padding: 6px 10px; list-style: none; cursor: pointer;
+  background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: 6px; }
+.drop summary::-webkit-details-marker { display: none; }
+.drop summary::after { content: "▾"; color: var(--suave); }
+.drop[open] summary::after { content: "▴"; }
+.drop-lista { margin-top: 4px; padding: 4px; max-height: 240px; overflow-y: auto; background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: 6px; }
+.drop-lista label { display: flex; align-items: center; gap: 8px; padding: 5px 7px; border-radius: 4px; cursor: pointer; }
+.drop-lista label:hover { background: var(--superficie-2); }
+.drop-lista input[type=checkbox] { width: 16px; height: 16px; min-height: 0; margin: 0; flex: none; accent-color: var(--acento); }
+.drop-lista .preco-est { margin-left: auto; color: var(--suave); font-size: 12.5px; }
+.linha-novo { display: flex; gap: 6px; padding: 6px 4px 2px; margin-top: 4px; border-top: 1px solid var(--linha); }
+.linha-item { display: grid; grid-template-columns: minmax(0, 1fr) 110px 28px; align-items: center; gap: 6px; }
+.linha-item input { min-height: 32px; padding: 3px 8px; }
+.tirar { padding: 4px; background: none; border: 0; color: var(--suave); }
+.tirar:hover { color: var(--ruim); }
+.itens { display: grid; gap: 5px; }
+.itens-total { display: flex; justify-content: space-between; gap: 12px; padding-top: 6px; border-top: 1px solid var(--linha); font-weight: 600; }
+.itens-total span:first-child { font-weight: 400; color: var(--suave); font-size: 13px; }
+
+/* premissas */
+.modal { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; width: min(840px, 100%); max-height: 100%; background: var(--superficie); border-radius: 10px; box-shadow: var(--sombra-alta); overflow: hidden; }
+.modal > header { padding: 14px 18px; border-bottom: 1px solid var(--linha); }
+.modal > header h2 { font: 700 21px/1.1 var(--fonte-numero); }
+.modal-corpo { min-height: 0; padding: 16px 18px; overflow-y: auto; display: grid; grid-auto-rows: max-content; gap: 20px; }
+.modal-corpo h3 { font: 600 15px/1.2 var(--fonte); }
+.modal > footer { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 12px 18px; border-top: 1px solid var(--linha); }
+.modal > footer .dica { margin-right: auto; color: var(--ruim); }
+.itens.colunas { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 6px 16px; }
+
+/* tela cheia e aviso rápido */
+.tela-cheia { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; background: rgba(4, 8, 12, .95); }
+.tela-cheia img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.tela-cheia .seta { width: 48px; height: 76px; font-size: 26px; background: rgba(255, 255, 255, .14); }
+.tela-cheia .seta:hover { background: rgba(255, 255, 255, .28); }
+.tela-cheia .fechar { position: absolute; top: 12px; right: 12px; width: 42px; height: 42px; background: rgba(255, 255, 255, .14); color: #fff; border: 0; border-radius: 6px; font-size: 16px; }
+.tela-cheia .pos-foto { right: auto; left: 50%; transform: translateX(-50%); bottom: 14px; }
+.recado { position: fixed; left: 50%; bottom: 20px; z-index: 50; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; max-width: calc(100% - 32px);
+  padding: 8px 8px 8px 14px; background: var(--texto); color: var(--superficie); border-radius: 6px; box-shadow: var(--sombra-alta); }
+.recado button { padding: 3px 10px; background: none; border: 1px solid currentColor; border-radius: 4px; color: inherit; font-weight: 600; }
+
+/* login */
+.login { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; background: var(--fundo); }
+.login-caixa { display: grid; gap: 14px; justify-items: stretch; width: min(380px, 100%); padding: 24px; background: var(--superficie); border: 1px solid var(--linha); border-radius: 10px; box-shadow: var(--sombra); }
+.login-caixa .placa { justify-self: start; }
+.login-caixa h1 { font: 700 26px/1.1 var(--fonte-numero); }
+.login-erro { min-height: 18px; color: var(--ruim); font-size: 13px; }
+
+@media (max-width: 1000px) {
+  .cobertura { padding: 0; }
+  .ficha { width: 100%; height: 100%; border-radius: 0; }
+  /* Uma coluna só: fotos, depois a decisão e a conta, e por último os dados do lote. */
+  .ficha-corpo { display: flex; flex-direction: column; gap: 16px; padding: 14px; overflow-y: auto; }
+  .coluna { display: contents; }
+  .coluna > * { order: 1; flex: none; }
+  .coluna:first-child > * { order: 2; }
+  .coluna:first-child > .galeria { order: 0; }
+  .modal { height: 100%; border-radius: 0; width: 100%; }
+}
+@media (max-width: 860px) {
+  .topo { position: static; padding: 10px 16px; }
+  .topo-acoes { margin-left: 0; }
+  .topo-acoes .status { flex-basis: 100%; }
+  .topo-acoes .btn { min-height: 32px; padding: 3px 10px; font-size: 13px; }
+  .minha-lista { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+  .minha-lista h2 { grid-column: 1 / -1; }
+  .corpo.com-filtros { grid-template-columns: minmax(0, 1fr); }
+  /* No celular o menu ocupa a tela e o botão de fechar fica sempre à vista. */
+  .filtros { position: fixed; inset: 0; top: 0; z-index: 25; max-height: none; padding: 16px 16px 0; background: var(--superficie); align-content: start; }
+  .filtros-rodape { display: block; position: sticky; bottom: 0; margin: 0 -16px; padding: 10px 16px; background: var(--superficie); border-top: 1px solid var(--linha); }
+  .filtros-rodape .btn { width: 100%; }
+  .conteudo, .corpo.com-filtros .conteudo { padding: 12px 16px 40px; }
+  .aviso { padding: 8px 16px; }
+  .tabela-caixa { max-height: none; }
+  .barra .busca { flex-basis: 100%; order: -1; }
+  .ficha-acoes .salvo { display: none; }
+  .ficha-topo { flex-wrap: wrap; }
+  .ficha-titulo { flex-basis: calc(100% - 90px); order: -1; }
+}
+@media (prefers-reduced-motion: reduce) { .status.ativo i { animation: none; } }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div>
+    <h1 id="titulo">Leilão</h1>
+    <div class="sub num" id="sub">Carregando...</div>
+  </div>
+  <div class="topo-acoes">
+    <span class="status" id="status" role="status"><i></i><span id="status-texto"></span></span>
+    <a class="btn" id="btn-edital" target="_blank" rel="noopener noreferrer" hidden>Edital</a>
+    <button class="btn" id="btn-premissas">Premissas</button>
+    <button class="btn" id="btn-coletar">Atualizar agora</button>
+    <button class="btn" id="btn-sair" hidden>Sair</button>
+  </div>
+</header>
+<div class="avisos" id="avisos"></div>
+
+<div class="corpo" id="corpo">
+  <aside class="filtros" id="filtros" aria-label="Filtros">
+    <section class="grupo">
+      <h2>Dinheiro</h2>
+      <label class="campo">Lance atual (R$)<div class="dupla"><input id="f-valor-de" type="number" min="0" step="500" placeholder="De" aria-label="Lance atual a partir de"><input id="f-valor-ate" type="number" min="0" step="500" placeholder="Até" aria-label="Lance atual até"></div></label>
+      <label class="campo">Lucro de referência a partir de (R$)<input id="f-lucro-min" type="number" step="500" placeholder="Ex.: 5000"></label>
+      <label class="check"><input id="f-sem-lance" type="checkbox">Só lotes sem lances</label>
+      <label class="check"><input id="f-subiu" type="checkbox">Lance mudou nas últimas 24 h</label>
+      <label class="check"><input id="f-passou" type="checkbox">Já passou do meu máximo</label>
+    </section>
+    <section class="grupo">
+      <h2>Carro</h2>
+      <label class="campo" id="campo-categoria">Tipo<select id="f-categoria"></select></label>
+      <label class="campo">Marca<select id="f-marca"></select></label>
+      <label class="campo">Ano do modelo<div class="dupla"><input id="f-ano-de" type="number" placeholder="De" aria-label="Ano a partir de"><input id="f-ano-ate" type="number" placeholder="Até" aria-label="Ano até"></div></label>
+      <label class="campo">Combustível<select id="f-combustivel"></select></label>
+      <label class="campo">Cor<select id="f-cor"></select></label>
+    </section>
+    <section class="grupo">
+      <h2>Condição informada</h2>
+      <label class="campo">Chave<select id="f-chave"></select></label>
+      <label class="campo">Conservação<select id="f-conservacao"></select></label>
+      <label class="campo">Confiança da FIPE<select id="f-confianca">
+        <option value="">Todas</option>
+        <option value="boa">Alta, média ou escolhida</option>
+        <option value="alta">Só alta ou escolhida</option>
+        <option value="revisar">A revisar ou sem FIPE</option>
+      </select></label>
+    </section>
+    <div class="filtros-rodape"><button class="btn primario" id="filtros-ver">Ver lotes</button></div>
+  </aside>
+
+  <main class="conteudo">
+    <section class="minha-lista" id="minha-lista" hidden aria-label="Lotes marcados como Quero">
+      <h2>Minha lista</h2>
+      <div><b id="r-interesse">0</b><span>lotes marcados como Quero</span></div>
+      <div><b id="r-atual">R$ 0</b><span>em lances atuais</span></div>
+      <div><b id="r-max">R$ 0</b><span>nos meus máximos</span></div>
+      <div><b id="r-lucro">R$ 0</b><span>de lucro de referência</span></div>
+    </section>
+    <nav class="abas" id="abas" aria-label="Filtrar por marcação"></nav>
+    <div class="barra">
+      <button class="btn" id="btn-filtros" aria-expanded="false" aria-controls="filtros">Filtros</button>
+      <input class="busca" id="f-busca" type="search" placeholder="Buscar modelo, nº do lote, cor, anotação ou tag" aria-label="Buscar">
+      <label class="ordem">Ordenar por
+        <select id="ordem">
+          <option value="lote">Nº do lote</option>
+          <option value="lucro-d">Maior lucro de referência</option>
+          <option value="pctfipe">Menor % da FIPE</option>
+          <option value="valor">Menor lance</option>
+          <option value="valor-d">Maior lance</option>
+          <option value="lances-d">Mais lances</option>
+          <option value="views-d">Mais visualizações</option>
+          <option value="alta-d">Maior alta sobre o inicial</option>
+          <option value="ano-d">Ano mais novo</option>
+          <option value="km" id="ordem-km">Menor KM</option>
+          <option value="mudou-d">Mudou mais recentemente</option>
+        </select>
+      </label>
+      <div class="alternar" role="group" aria-label="Forma de ver os lotes">
+        <button id="v-cartoes">Cartões</button>
+        <button id="v-tabela">Tabela</button>
+      </div>
+    </div>
+    <div class="ativos" id="ativos" aria-live="polite"></div>
+    <div id="lista"><div class="vazio">Carregando os lotes...</div></div>
+  </main>
+</div>
+
+<div class="cobertura" id="cobertura-ficha" hidden>
+  <article class="ficha" id="ficha" role="dialog" aria-modal="true" aria-label="Ficha do lote"></article>
+</div>
+
+<div class="cobertura" id="premissas" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="p-titulo">
+    <header><h2 id="p-titulo">Premissas da conta</h2><p class="dica">Valem para todos os lotes.</p></header>
+    <div class="modal-corpo">
+      <div class="trio">
+        <label class="campo">Venda pessimista (% da FIPE)<input id="p-venda" type="number" min="1" max="100"></label>
+        <label class="campo">Comissão do leiloeiro (% do lance)<input id="p-comissao" type="number" min="0" max="100" step="0.5" placeholder="Ainda não informada"></label>
+        <label class="campo">ICMS (% do lance)<input id="p-icms" type="number" min="0" max="100" step="0.1" placeholder="Ainda não informado"></label>
+      </div>
+      <p class="dica">Pelo edital: comissão de 5%; ICMS de 0,6% para comprador do DF ou empresa de fora, e 0,9% para pessoa física de fora do DF.</p>
+      <section class="grupo">
+        <div><h3>Outros custos por carro</h3><p class="dica">Entram no lucro de referência. Ex.: taxas do edital, pátio, transferência.</p></div>
+        <div class="itens" id="p-fixos"></div>
+        <div><button class="btn" data-p-novo="custos_fixos">Adicionar custo</button></div>
+      </section>
+      <section class="grupo">
+        <div><h3>Lista de serviços</h3><p class="dica">Ficam fora do lucro de referência. O valor é a estimativa padrão; em cada carro dá para ajustar.</p></div>
+        <div class="itens colunas" id="p-servicos"></div>
+        <div><button class="btn" data-p-novo="servicos">Adicionar serviço</button></div>
+      </section>
+    </div>
+    <footer>
+      <span class="dica" id="p-msg" role="alert"></span>
+      <button class="btn" id="p-cancelar">Cancelar</button>
+      <button class="btn primario" id="p-salvar">Salvar premissas</button>
+    </footer>
+  </div>
+</div>
+
+<div class="tela-cheia" id="tela-cheia" hidden role="dialog" aria-label="Foto em tela cheia">
+  <img id="tc-img" alt="">
+  <button class="seta ant" data-foto="-1" aria-label="Foto anterior">‹</button>
+  <button class="seta prox" data-foto="1" aria-label="Próxima foto">›</button>
+  <button class="fechar" id="tc-fechar" aria-label="Fechar foto">✕</button>
+  <span class="pos-foto num" id="tc-pos"></span>
+</div>
+<div class="recado" id="recado" role="status" hidden></div>
+
+<div class="login" id="login" hidden>
+  <form class="login-caixa" id="login-form">
+    <span class="placa grande"><small>LOTE</small><b>?</b></span>
+    <h1 id="login-titulo">Painel do leilão</h1>
+    <p class="dica">Seu nome aparece no histórico das alterações. A senha é a do grupo.</p>
+    <label class="campo">Seu nome<input id="login-nome" autocomplete="given-name" maxlength="40" required></label>
+    <label class="campo">Senha do grupo<input id="login-senha" type="password" autocomplete="current-password" required></label>
+    <p class="login-erro" id="login-erro" role="alert"></p>
+    <button class="btn primario" id="login-entrar" type="submit">Entrar</button>
+  </form>
+</div>
+
+<script src="config.js"></script>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const MARCAS = { interesse: "Quero", talvez: "Talvez", descartado: "Descartar" };
+const MARCAS_FEITAS = { interesse: "Quero", talvez: "Talvez", descartado: "Descartado" };
+const ABAS = [["ativos", "Todos"], ["interesse", "Quero"], ["talvez", "Talvez"], ["sem", "Sem marcação"], ["descartado", "Descartados"]];
+
+let lotes = [], meta = {}, visiveis = [], aberto = null, cacheDetalhe = {}, fotoAtual = 0, ultimaColeta = null, pronto = false;
+let ajustes = { pct_venda: 70, comissao_pct: null, custos_fixos: [], servicos: [] };
+const estado = Object.assign({ marcacao: "ativos", ordem: "lote", visao: "cartoes", filtros: {} }, lerLocal());
+
+function lerLocal() { try { return JSON.parse(localStorage.getItem("leilao-v2") || "{}"); } catch { return {}; } }
+function gravarLocal() { try { localStorage.setItem("leilao-v2", JSON.stringify(estado)); } catch {} }
+
+/* ------------------------------------------------ apresentação dos dados */
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const brl = v => {
+  if (v == null) return "-";
+  const n = Math.round(v), corpo = "R$ " + Math.abs(n).toLocaleString("pt-BR");
+  return n < 0 ? "−" + corpo : corpo;
+};
+const urlSegura = u => /^https:\/\//.test(u || "") && !/produto-sem-imagem/.test(u) ? u : "";
+const dataHora = iso => iso ? new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).replace(", ", " às ") : "-";
+const pctTexto = v => `${Number(v).toLocaleString("pt-BR")}%`;
+const plural = (n, um, varios) => `${n.toLocaleString("pt-BR")} ${n === 1 ? um : varios}`;
+
+const ANO_CURTO = l => {
+  if (!l.ano_fab) return "";
+  if (l.ano_fab === l.ano_mod) return String(l.ano_fab);
+  return String(l.ano_fab).slice(0, 2) === String(l.ano_mod).slice(0, 2) ? `${l.ano_fab}/${String(l.ano_mod).slice(2)}` : `${l.ano_fab}/${l.ano_mod}`;
+};
+const NOMES_MARCA = { GM: "Chevrolet", CHEVROLET: "Chevrolet", MMC: "Mitsubishi", "JAC MOTORS": "JAC", "MERCEDES-BENZ": "Mercedes-Benz", BMW: "BMW", KIA: "Kia", VW: "Volkswagen" };
+function marcaNome(l) {
+  const m = l.marca || "";
+  return NOMES_MARCA[m] || m.toLowerCase().replace(/(^|[\s-])\S/g, c => c.toUpperCase());
+}
+const NOMES_COMBUSTIVEL = { ALCOOL: "Álcool", DIESEL: "Diesel", FLEX: "Flex", GASOLINA: "Gasolina", "GASOLINA/ALCOOL": "Gasolina/Álcool" };
+const combustivelNome = v => NOMES_COMBUSTIVEL[v] || v || "";
+const textoChave = v => v === "NÃO" ? "Sem chave" : v === "SIM" ? "Com chave" : v;
+const semChave = l => /^N[ÃA]O/.test(l.chave || "");
+const metaLote = l => [marcaNome(l), ANO_CURTO(l), l.cor, combustivelNome(l.combustivel), l.km != null ? `${l.km.toLocaleString("pt-BR")} km` : ""].filter(Boolean).join(" · ");
+
+function haQuanto(iso) {
+  if (!iso) return "nunca";
+  const min = Math.round((new Date(meta.agora || Date.now()) - new Date(iso)) / 60000);
+  if (min < 1) return "agora";
+  if (min < 60) return `há ${min} min`;
+  if (min < 2880) return `há ${Math.round(min / 60)} h`;
+  return `há ${Math.round(min / 1440)} dias`;
+}
+
+/* ------------------------------------------------ a conta do carro */
+/* venda pessimista - lance - comissão - ICMS - outros custos. Serviços ficam de fora.
+   O lance da conta é o meu máximo, se eu tiver definido; senão, o mínimo aceito agora. */
+const fipeDe = l => l.valor_ref ?? l.fipe_valor ?? null;
+const lanceMin = l => l.lances > 0 ? l.valor_atual + (l.incremento || 0) : l.valor_atual;
+const somaCustos = itens => (itens || []).reduce((s, i) => s + (i.valor || 0), 0);
+function dadosFaltando() {
+  const faltam = [];
+  if (ajustes.comissao_pct == null) faltam.push("a comissão");
+  if (ajustes.icms_pct == null) faltam.push("o ICMS");
+  const custos = ajustes.custos_fixos || [];
+  if (!custos.length) faltam.push("os outros custos");
+  custos.filter(i => i.valor == null).forEach(i => faltam.push(i.nome.toLowerCase()));
+  return faltam;
+}
+const contaFaltaDados = () => dadosFaltando().length > 0;
+function conta(l) {
+  const fipe = fipeDe(l), lance = l.lance_max ?? lanceMin(l);
+  const comissao = lance * (ajustes.comissao_pct || 0) / 100;
+  const icms = lance * (ajustes.icms_pct || 0) / 100;
+  const fixos = somaCustos(ajustes.custos_fixos);
+  if (fipe == null) return { fipe, lance, comissao, icms, fixos, venda: null, lucro: null, empate: null };
+  const venda = fipe * ajustes.pct_venda / 100;
+  return { fipe, lance, comissao, icms, fixos, venda, lucro: venda - lance - comissao - icms - fixos,
+    empate: (venda - fixos) / (1 + ((ajustes.comissao_pct || 0) + (ajustes.icms_pct || 0)) / 100) };
+}
+const confiancaDe = l => l.valor_ref != null ? "manual" : (l.fipe_valor == null ? (l.fipe_confianca ? "nao_achei" : "") : l.fipe_confianca);
+const TEXTO_CONFIANCA = { alta: "Versão provável", media: "Versão aproximada", baixa: "Revisar versão", manual: "Escolhida por você", nao_achei: "Não encontrada" };
+const passouMax = l => l.lance_max != null && l.valor_atual > l.lance_max;
+const mudou24h = l => l.valor_mudou_em && (new Date(meta.agora) - new Date(l.valor_mudou_em)) < 864e5;
+const alta = l => l.valor_inicial ? (l.valor_atual - l.valor_inicial) / l.valor_inicial : 0;
+
+/* ------------------------------------------------ de onde vêm os dados */
+/* Sem config.js o painel fala com painel.py neste computador. Com config.js, a base são arquivos
+   em um repositório privado do GitHub. As duas formas entregam os dados no mesmo formato. */
+const NUVEM = window.LEILAO_CONFIG || null;
+const JSON_POST = { method: "POST", headers: { "Content-Type": "application/json" } };
+let eu = null;
+
+const apiLocal = {
+  async lotes() { return (await fetch("/api/lotes")).json(); },
+  async lote(id) { return (await fetch(`/api/lote/${id}`)).json(); },
+  async salvarAnotacao(l) {
+    const r = await fetch(`/api/anotacao/${l.id}`, { ...JSON_POST, body: JSON.stringify(pegarAnot(l)) });
+    if (!r.ok) throw new Error("salvar");
+  },
+  async salvarAjustes(novos) {
+    const r = await fetch("/api/ajustes", { ...JSON_POST, body: JSON.stringify(novos) });
+    const corpo = await r.json();
+    if (!r.ok) throw new Error(corpo.erro || "Não consegui salvar.");
+    return corpo;
+  },
+  async trocarFipe(l, codigo) {
+    const r = await fetch(`/api/fipe/${l.id}`, { ...JSON_POST, body: JSON.stringify({ modelo_codigo: codigo }) });
+    const corpo = await r.json();
+    if (!r.ok) throw new Error(corpo.erro);
+    return corpo;
+  },
+  async coletar() { await fetch("/api/coletar", { ...JSON_POST, body: "{}" }); },
+  async temNovidade() { return true; },
+};
+
+const CODIGO_COMBUSTIVEL = { ALCOOL: "2", DIESEL: "3" };
+const API_GITHUB = (NUVEM && NUVEM.api_base != null) ? NUVEM.api_base : "https://api.github.com";
+const CHAVE_SESSAO = "leilao-sessao";
+const agoraLocal = () => new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 19);
+const assinaturaColeta = c => c ? `${c.id}|${c.status}|${c.fim}` : "";
+let versaoColeta = null, tokenBase = null;
+const arquivos = new Map(); // nome -> { etag, sha, dados }
+
+async function pedirBase(nome, opcoes = {}) {
+  const r = await fetch(`${API_GITHUB}/repos/${NUVEM.repo}/contents/dados/${nome}`, {
+    cache: "no-store", ...opcoes,
+    headers: { Authorization: `Bearer ${tokenBase}`, "X-GitHub-Api-Version": "2022-11-28", ...opcoes.headers },
+  });
+  if (r.status === 401) { sessaoExpirada(); throw new Error("O acesso expirou."); }
+  return r;
+}
+const bytesParaTexto = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, "")), c => c.charCodeAt(0)));
+
+/* Lê um arquivo da base. O GitHub não desconta do limite quando responde "não mudou". */
+async function lerArquivo(nome, { grande = false, novo = false } = {}) {
+  const guardado = arquivos.get(nome);
+  const headers = { Accept: grande ? "application/vnd.github.raw+json" : "application/vnd.github+json" };
+  if (guardado && !novo) headers["If-None-Match"] = guardado.etag;
+  const r = await pedirBase(nome, { headers });
+  if (r.status === 304) return { ...guardado, mudou: false };
+  if (r.status === 404) return { dados: null, sha: null, mudou: false };
+  if (!r.ok) throw new Error(`A base respondeu ${r.status}.`);
+  let dados, sha = null;
+  if (grande) dados = await r.json();
+  else {
+    const corpo = await r.json();
+    sha = corpo.sha;
+    dados = JSON.parse(bytesParaTexto(corpo.content));
+  }
+  arquivos.set(nome, { etag: r.headers.get("ETag"), sha, dados });
+  return { dados, sha, mudou: true };
+}
+const formatarMapa = mapa => "{\n" + Object.keys(mapa).sort().map(k => `${JSON.stringify(k)}: ${JSON.stringify(mapa[k])}`).join(",\n") + "\n}\n";
+
+/* Cada alteração vira um commit. Uma por vez nesta tela; se outro sócio gravou antes,
+   releio o arquivo, reaplico só o que mudei e tento de novo. */
+let filaGravacao = Promise.resolve();
+function gravarArquivo(nome, alterar, mensagem, formatar = formatarMapa) {
+  const tarefa = async () => {
+    for (let tentativa = 0; tentativa < 6; tentativa++) {
+      const atual = await lerArquivo(nome, { novo: true });
+      const conteudo = formatar(alterar(atual.dados || {}));
+      const r = await pedirBase(nome, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Accept: "application/vnd.github+json" },
+        body: JSON.stringify({ message: mensagem, content: btoa(unescape(encodeURIComponent(conteudo))), sha: atual.sha || undefined, branch: "main" }),
+      });
+      if (r.ok) return;
+      if (r.status !== 409 && r.status !== 422) throw new Error(`A base recusou a gravação (${r.status}).`);
+      await new Promise(p => setTimeout(p, 400 + Math.random() * 1200));
+    }
+    throw new Error("A base está muito disputada agora. Tente de novo.");
+  };
+  filaGravacao = filaGravacao.then(tarefa, tarefa);
+  return filaGravacao;
+}
+function descreverAlteracao(l, campos) {
+  const partes = campos.map(c => ({
+    marcacao: l.marcacao ? `marcado como ${MARCAS_FEITAS[l.marcacao]}` : "marcação removida",
+    lance_max: l.lance_max != null ? `lance máximo ${brl(l.lance_max)}` : "lance máximo removido",
+    valor_ref: "FIPE digitada", tags: "tags", notas: "notas", servicos: "serviços",
+  }[c]));
+  return `Lote ${l.lote_num}: ${partes.join(", ")} (${eu})`;
+}
+
+const apiNuvem = {
+  async lotes() {
+    const [base, anot, fipe, manual, premissas, coletas] = await Promise.all([
+      lerArquivo("lotes.json", { grande: true }), lerArquivo("anotacoes.json"), lerArquivo("fipe.json", { grande: true }),
+      lerArquivo("fipe_manual.json"), lerArquivo("premissas.json"), lerArquivo("coletas.json"),
+    ]);
+    const lista = (coletas.dados && coletas.dados.coletas) || [];
+    versaoColeta = assinaturaColeta(lista[0]);
+    const ultimaBoa = lista.find(c => ["ok", "parcial"].includes(c.status));
+    return {
+      nome_leilao: NUVEM.nome_leilao || "Leilão",
+      edital: coletas.dados ? coletas.dados.edital : null,
+      ajustes: premissas.dados || ajustes,
+      coleta: lista[0] || null,
+      ultima_boa: ultimaBoa ? ultimaBoa.fim : null,
+      coletando: false,
+      agora: agoraLocal(),
+      lotes: (base.dados || []).map(l => {
+        const a = (anot.dados || {})[l.id] || {}, f = (fipe.dados || {})[l.id] || {}, m = (manual.dados || {})[l.id];
+        return {
+          ...l,
+          marcacao: a.marcacao || "", lance_max: a.lance_max ?? null, valor_ref: a.valor_ref ?? null,
+          tags: a.tags || "", notas: a.notas || "", servicos_json: JSON.stringify(a.servicos || []),
+          atualizado_por: a.atualizado_por || null, atualizado_em: a.atualizado_em || null,
+          fipe_valor: m ? m.valor : f.valor ?? null,
+          fipe_nome: m ? m.modelo_nome : f.modelo_nome || null,
+          fipe_confianca: m ? "manual" : f.confianca || null,
+          fipe_mes: m ? m.mes_ref : f.mes_ref || null,
+        };
+      }),
+    };
+  },
+  async lote(id) {
+    const [detalhes, manual] = await Promise.all([lerArquivo("detalhes.json", { grande: true }), lerArquivo("fipe_manual.json")]);
+    const d = (detalhes.dados || {})[id];
+    if (!d) throw new Error("Lote não encontrado na base.");
+    const m = (manual.dados || {})[id];
+    return { ...d, fipe_atual: m ? m.modelo_codigo : d.fipe_atual };
+  },
+  /* Só os campos mexidos: dois sócios no mesmo lote não apagam o trabalho um do outro. */
+  async salvarAnotacao(l, campos) {
+    const valores = {};
+    campos.forEach(c => { valores[c] = l[c]; });
+    await gravarArquivo("anotacoes.json", mapa => {
+      mapa[l.id] = { marcacao: "", lance_max: null, valor_ref: null, tags: "", notas: "", servicos: [], ...mapa[l.id], ...valores, atualizado_por: eu, atualizado_em: new Date().toISOString() };
+      return mapa;
+    }, descreverAlteracao(l, campos));
+  },
+  async salvarAjustes(novos) {
+    const limpa = lista => (lista || []).filter(i => String(i.nome || "").trim()).map(i => ({ nome: String(i.nome).trim(), valor: i.valor === "" || i.valor == null ? null : +i.valor }));
+    const pct = v => v === "" || v == null ? null : +v;
+    const valor = { pct_venda: +novos.pct_venda, comissao_pct: pct(novos.comissao_pct), icms_pct: pct(novos.icms_pct), custos_fixos: limpa(novos.custos_fixos), servicos: limpa(novos.servicos) };
+    if (!(valor.pct_venda > 0 && valor.pct_venda <= 100) || [valor.comissao_pct, valor.icms_pct].some(p => p != null && (p < 0 || p > 100))) throw new Error("Os percentuais precisam ficar entre 0 e 100.");
+    await gravarArquivo("premissas.json", () => valor, `Premissas alteradas (${eu})`, v => JSON.stringify(v, null, 1) + "\n");
+    return valor;
+  },
+  async trocarFipe(l, codigo) {
+    const detalhes = await lerArquivo("detalhes.json", { grande: true });
+    const marca = ((detalhes.dados || {})[l.id] || {}).marca_codigo;
+    if (!marca) throw new Error("Este lote não tem marca na FIPE. Digite o valor nas anotações.");
+    const base = `https://fipe.parallelum.com.br/api/v2/cars/brands/${encodeURIComponent(marca)}/models/${encodeURIComponent(codigo)}/years`;
+    const pegar = async url => {
+      const r = await fetch(url);
+      if (r.status === 429) throw new Error("As consultas de hoje à FIPE acabaram. Tente amanhã ou digite o valor nas anotações.");
+      if (!r.ok) throw new Error("A FIPE não respondeu. Tente de novo em instantes.");
+      return r.json();
+    };
+    const anos = (await pegar(base)).map(a => a.code);
+    const pedido = `${l.ano_mod}-${CODIGO_COMBUSTIVEL[String(l.combustivel || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase()] || "1"}`;
+    const ano = anos.includes(pedido) ? pedido : anos.find(a => a.startsWith(`${l.ano_mod}-`));
+    if (!ano) throw new Error(`Esta versão não existe na FIPE para ${l.ano_mod}. Mantive a anterior.`);
+    const preco = await pegar(`${base}/${encodeURIComponent(ano)}`);
+    const achado = /\d[\d.]*,\d+/.exec(preco.price || "");
+    if (!achado) throw new Error("A FIPE não devolveu preço para esta versão. Mantive a anterior.");
+    const valor = +achado[0].replace(/\./g, "").replace(",", ".");
+    await gravarArquivo("fipe_manual.json", mapa => {
+      mapa[l.id] = { modelo_codigo: String(codigo), ano_codigo: ano, modelo_nome: preco.model, valor, mes_ref: preco.referenceMonth, atualizado_por: eu, atualizado_em: new Date().toISOString() };
+      return mapa;
+    }, `Lote ${l.lote_num}: FIPE trocada para ${preco.model} (${eu})`);
+    return { valor, modelo_nome: preco.model, mes_ref: preco.referenceMonth };
+  },
+  async coletar() {},
+  /* Traz as edições dos outros sócios e diz se o coletor trouxe dados novos. */
+  async temNovidade() {
+    const [anot, manual, premissas, coletas] = await Promise.all([
+      lerArquivo("anotacoes.json"), lerArquivo("fipe_manual.json"), lerArquivo("premissas.json"), lerArquivo("coletas.json"),
+    ]);
+    // Sempre comparo com a tela: uma gravação minha pode ter trazido a edição de outro sócio.
+    aplicarMudancasDeAnotacoes(anot.dados || {});
+    Object.entries(manual.dados || {}).forEach(([id, m]) => aplicarFipeRemota({ ...m, lote_id: +id }));
+    if (premissas.dados && JSON.stringify(premissas.dados) !== JSON.stringify(ajustes)) {
+      ajustes = premissas.dados;
+      desenhar();
+      desenharAvisos();
+      if (aberto) atualizarConta(lotes.find(x => x.id === aberto));
+    }
+    const lista = (coletas.dados && coletas.dados.coletas) || [];
+    return assinaturaColeta(lista[0]) !== versaoColeta;
+  },
+};
+const API = NUVEM ? apiNuvem : apiLocal;
+
+/* Mudanças feitas pelos outros sócios entram na tela sem recarregar. */
+function aplicarMudancasDeAnotacoes(mapa) {
+  lotes.forEach(l => {
+    const a = mapa[l.id];
+    if (!a || a.atualizado_em === l.atualizado_em) return;
+    aplicarAnotacaoRemota({ ...a, lote_id: l.id });
+  });
+}
+function aplicarAnotacaoRemota(a) {
+  const l = lotes.find(x => x.id === a.lote_id);
+  if (!l) return;
+  const anterior = l.marcacao;
+  const foco = document.activeElement ? document.activeElement.id : "";
+  const campoTela = { lance_max: "a-max", valor_ref: "a-ref", tags: "a-tags", notas: "a-notas" };
+  const sujos = l._sujos || new Set();
+  const padrao = { marcacao: "", lance_max: null, valor_ref: null, tags: "", notas: "", servicos: [] };
+  Object.keys(padrao).forEach(c => {
+    if (sujos.has(c) || (aberto === l.id && foco === campoTela[c])) return;
+    l[c] = a[c] ?? padrao[c];
+  });
+  l.atualizado_por = a.atualizado_por;
+  l.atualizado_em = a.atualizado_em;
+  atualizarItem(l);
+  if (aberto === l.id) {
+    atualizarMarcador(l);
+    Object.entries(campoTela).forEach(([c, id]) => { if (foco !== id && $(id)) $(id).value = l[c] ?? ""; });
+    atualizarConta(l);
+    atualizarFolga(l);
+    desenharServicos(l);
+    atualizarAutor(l);
+  }
+  if (a.atualizado_por && a.atualizado_por !== eu && l.marcacao !== anterior && l.marcacao) {
+    recado(`${a.atualizado_por} marcou o lote ${l.lote_num} como ${MARCAS_FEITAS[l.marcacao]}`);
+  }
+}
+function aplicarFipeRemota(m) {
+  const l = lotes.find(x => x.id === m.lote_id);
+  if (!l || (l.fipe_confianca === "manual" && l.fipe_nome === m.modelo_nome)) return;
+  Object.assign(l, { fipe_valor: m.valor, fipe_nome: m.modelo_nome, fipe_confianca: "manual", fipe_mes: m.mes_ref });
+  delete cacheDetalhe[l.id];
+  atualizarItem(l);
+  if (aberto === l.id) obterDetalhe(l.id).then(() => { atualizarConta(l); atualizarFolga(l); });
+}
+function atualizarAutor(l) {
+  const el = $("a-autor");
+  if (!el) return;
+  el.hidden = !l.atualizado_por;
+  if (l.atualizado_por) el.textContent = `Última edição: ${l.atualizado_por}, ${haQuanto(l.atualizado_em)}`;
+}
+
+/* ------------------------------------------------ carga */
+async function carregar() {
+  const d = await API.lotes();
+  const novaColeta = d.coleta ? `${d.coleta.id}|${d.coleta.status}|${d.coleta.fim}` : null;
+  const comDetalhe = lista => lista.filter(l => l.detalhes_em).length;
+  const comFipe = lista => lista.filter(l => l.fipe_valor != null).length;
+  const mudou = !pronto || novaColeta !== ultimaColeta || lotes.length !== d.lotes.length
+    || comDetalhe(lotes) !== comDetalhe(d.lotes) || comFipe(lotes) !== comFipe(d.lotes);
+  meta = d;
+  ajustes = d.ajustes;
+  ultimaColeta = novaColeta;
+  if (mudou) {
+    d.lotes.forEach(l => { l.servicos = JSON.parse(l.servicos_json || "[]"); });
+    // Mantenho as anotações que estão na tela: posso estar digitando agora.
+    const locais = aberto ? lotes.find(l => l.id === aberto) : null;
+    const antes = locais ? assinatura(locais) : "";
+    lotes = d.lotes;
+    const novo = aberto ? lotes.find(l => l.id === aberto) : null;
+    if (locais && novo) Object.assign(novo, pegarAnot(locais));
+    cacheDetalhe = {};
+    pronto = true;
+    montarOpcoes();
+    desenhar();
+    if (novo && assinatura(novo) !== antes) desenharFichaSemTirarFoco();
+  }
+  desenharCabecalho();
+  desenharAvisos();
+}
+const assinatura = l => `${l.detalhes_em}|${l.valor_atual}|${l.lances}|${l.fipe_valor}`;
+const pegarAnot = l => ({ marcacao: l.marcacao, lance_max: l.lance_max, valor_ref: l.valor_ref, tags: l.tags, notas: l.notas, servicos: l.servicos });
+
+/* ------------------------------------------------ cabeçalho e avisos */
+function desenharCabecalho() {
+  const ativos = lotes.filter(l => !l.removido);
+  const inicio = lotes.map(l => l.inicio).filter(Boolean).sort()[0];
+  $("titulo").textContent = meta.nome_leilao || "Leilão";
+  document.title = meta.nome_leilao || "Leilão";
+  let quando = "";
+  if (inicio) {
+    const dias = Math.ceil((new Date(inicio) - new Date(meta.agora)) / 864e5);
+    quando = `começa ${dataHora(inicio)}` + (dias > 1 ? ` (em ${dias} dias)` : dias === 1 ? " (amanhã)" : "");
+  }
+  $("sub").textContent = [plural(ativos.length, "lote", "lotes"), quando].filter(Boolean).join(" · ");
+  if (urlSegura(meta.edital)) { $("btn-edital").href = meta.edital; $("btn-edital").hidden = false; }
+
+  const c = meta.coleta, status = $("status"), texto = $("status-texto"), btn = $("btn-coletar");
+  const idadeMin = meta.ultima_boa ? (new Date(meta.agora) - new Date(meta.ultima_boa)) / 60000 : 0;
+  let classe = "";
+  if (meta.coletando) { classe = "ativo"; texto.textContent = "Atualizando agora"; }
+  else if (c && c.status === "erro") { classe = "ruim"; texto.textContent = `Atualizado ${haQuanto(meta.ultima_boa)}`; }
+  else if (idadeMin > 45) { classe = "atencao"; texto.textContent = `Atualizado ${haQuanto(meta.ultima_boa)}`; }
+  else texto.textContent = `Atualizado ${haQuanto(meta.ultima_boa)}`;
+  status.className = "status " + classe;
+  btn.disabled = !!meta.coletando;
+  btn.textContent = meta.coletando ? "Atualizando..." : "Atualizar agora";
+}
+function desenharAvisos() {
+  const avisos = [], c = meta.coleta;
+  const idadeMin = meta.ultima_boa ? (new Date(meta.agora) - new Date(meta.ultima_boa)) / 60000 : 0;
+  if (c && c.status === "erro" && !meta.coletando) avisos.push(["erro", `A última atualização falhou (${dataHora(c.inicio)}): ${esc(c.erro)}. Os valores podem estar velhos.`]);
+  else if (c && c.status === "parcial") avisos.push(["", `A última atualização ficou incompleta: ${esc(c.erro)}.`]);
+  else if (idadeMin > 45) avisos.push(["", `Os valores não são atualizados ${haQuanto(meta.ultima_boa)}. O computador pode ter ficado desligado.`]);
+  const ativos = lotes.filter(l => !l.removido);
+  const lidos = ativos.filter(l => l.detalhes_em).length;
+  if (lidos < ativos.length) avisos.push(["", `Lendo a página de cada carro: ${lidos} de ${ativos.length}. Fotos e filtros de condição vão se completando.`]);
+  if (contaFaltaDados()) {
+    const faltam = dadosFaltando();
+    const lista = faltam.length > 1 ? `${faltam.slice(0, -1).join(", ")} e ${faltam[faltam.length - 1]}` : faltam[0];
+    avisos.push(["", `O lucro aparece maior do que será: falta estimar ${esc(lista)}. <button class="btn" data-abrir-premissas>Preencher</button>`]);
+  }
+  $("avisos").innerHTML = avisos.map(([t, m]) => `<div class="aviso ${t}">${m}</div>`).join("");
+}
+
+/* ------------------------------------------------ filtros */
+const valorFiltro = (l, campo) => l[campo] || (l.detalhes_em ? "Não informado" : "");
+const SELECTS = {
+  "f-categoria": { nome: "Tipo", valor: l => l.categoria || "", vazio: "Todos" },
+  "f-marca": { nome: "Marca", valor: marcaNome, vazio: "Todas" },
+  "f-combustivel": { nome: "Combustível", valor: l => valorFiltro(l, "combustivel"), texto: combustivelNome, vazio: "Todos" },
+  "f-cor": { nome: "Cor", valor: l => valorFiltro(l, "cor"), vazio: "Todas" },
+  "f-chave": { nome: "Chave", valor: l => valorFiltro(l, "chave"), texto: textoChave, vazio: "Tanto faz" },
+  "f-conservacao": { nome: "Conservação", valor: l => valorFiltro(l, "conservacao"), vazio: "Todas" },
+};
+const NUMEROS = {
+  "f-valor-de": v => `Lance a partir de ${brl(+v)}`, "f-valor-ate": v => `Lance até ${brl(+v)}`,
+  "f-lucro-min": v => `Lucro a partir de ${brl(+v)}`, "f-ano-de": v => `Ano a partir de ${v}`, "f-ano-ate": v => `Ano até ${v}`,
+};
+const CHECKS = { "f-sem-lance": "Sem lances", "f-subiu": "Mudou em 24 h", "f-passou": "Passou do meu máximo" };
+const TEXTO_CONF_FILTRO = { boa: "FIPE alta, média ou escolhida", alta: "FIPE alta ou escolhida", revisar: "FIPE a revisar" };
+const CAMPOS_TEXTO = ["f-busca", "f-confianca", ...Object.keys(SELECTS), ...Object.keys(NUMEROS)];
+
+function montarOpcoes() {
+  for (const [id, cfg] of Object.entries(SELECTS)) {
+    const cont = {};
+    lotes.forEach(l => { const v = cfg.valor(l); if (v) cont[v] = (cont[v] || 0) + 1; });
+    const chaves = Object.keys(cont).sort((a, b) => a === "Não informado" ? 1 : b === "Não informado" ? -1 : a.localeCompare(b, "pt-BR"));
+    const el = $(id), atual = estado.filtros[id] || "";
+    el.disabled = !chaves.length;
+    el.innerHTML = `<option value="">${chaves.length ? cfg.vazio : "Aguardando a coleta"}</option>` +
+      chaves.map(k => `<option value="${esc(k)}">${esc(cfg.texto ? cfg.texto(k) : k)} (${cont[k]})</option>`).join("");
+    if (atual && !cont[atual]) delete estado.filtros[id];
+    el.value = estado.filtros[id] || "";
+  }
+  // Filtro com uma opção só não filtra nada.
+  $("campo-categoria").hidden = $("f-categoria").options.length <= 2;
+  $("ordem-km").hidden = !lotes.some(l => l.km != null);
+}
+function passaFiltros(l, ignorarMarcacao) {
+  const f = estado.filtros;
+  if (!ignorarMarcacao) {
+    const m = estado.marcacao;
+    if (m === "ativos" && l.marcacao === "descartado") return false;
+    if (m === "sem" && l.marcacao) return false;
+    if (["interesse", "talvez", "descartado"].includes(m) && l.marcacao !== m) return false;
+  }
+  for (const [id, cfg] of Object.entries(SELECTS)) if (f[id] && cfg.valor(l) !== f[id]) return false;
+  if (f["f-ano-de"] && !(l.ano_mod >= +f["f-ano-de"])) return false;
+  if (f["f-ano-ate"] && !(l.ano_mod <= +f["f-ano-ate"])) return false;
+  if (f["f-valor-de"] && !(l.valor_atual >= +f["f-valor-de"])) return false;
+  if (f["f-valor-ate"] && !(l.valor_atual <= +f["f-valor-ate"])) return false;
+  if (f["f-lucro-min"]) { const lucro = conta(l).lucro; if (lucro == null || lucro < +f["f-lucro-min"]) return false; }
+  if (f["f-confianca"]) {
+    const c = confiancaDe(l);
+    if (f["f-confianca"] === "boa" && !["alta", "media", "manual"].includes(c)) return false;
+    if (f["f-confianca"] === "alta" && !["alta", "manual"].includes(c)) return false;
+    if (f["f-confianca"] === "revisar" && !["baixa", "nao_achei", ""].includes(c)) return false;
+  }
+  if (f["f-sem-lance"] && l.lances > 0) return false;
+  if (f["f-subiu"] && !mudou24h(l)) return false;
+  if (f["f-passou"] && !passouMax(l)) return false;
+  if (f["f-busca"]) {
+    const alvo = `${l.lote_num} ${l.titulo} ${marcaNome(l)} ${ANO_CURTO(l)} ${l.ano_mod} ${l.cor} ${l.observacoes} ${l.notas} ${l.tags} ${l.fipe_nome} ${(l.servicos || []).map(s => s.nome).join(" ")}`
+      .normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+    const busca = f["f-busca"].normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+    if (!busca.split(/\s+/).filter(Boolean).every(p => alvo.includes(p))) return false;
+  }
+  return true;
+}
+const ORDENS = {
+  "lote": (a, b) => a.lote_num - b.lote_num,
+  "lucro-d": (a, b) => (conta(b).lucro ?? -1e12) - (conta(a).lucro ?? -1e12),
+  "pctfipe": (a, b) => (fipeDe(a) ? a.valor_atual / fipeDe(a) : 1e9) - (fipeDe(b) ? b.valor_atual / fipeDe(b) : 1e9),
+  "valor": (a, b) => a.valor_atual - b.valor_atual,
+  "valor-d": (a, b) => b.valor_atual - a.valor_atual,
+  "lances-d": (a, b) => b.lances - a.lances,
+  "views-d": (a, b) => (b.visualizacoes || 0) - (a.visualizacoes || 0),
+  "alta-d": (a, b) => alta(b) - alta(a),
+  "ano-d": (a, b) => (b.ano_mod || 0) - (a.ano_mod || 0),
+  "km": (a, b) => (a.km ?? 1e12) - (b.km ?? 1e12),
+  "mudou-d": (a, b) => (b.valor_mudou_em || "").localeCompare(a.valor_mudou_em || ""),
+};
+
+/* ------------------------------------------------ desenho da lista */
+const elegiveis = () => lotes.filter(l => !l.removido || l.marcacao);
+function desenhar() {
+  visiveis = elegiveis().filter(l => passaFiltros(l)).sort(ORDENS[estado.ordem] || ORDENS.lote);
+  $("ordem").value = estado.ordem;
+  $("v-cartoes").setAttribute("aria-pressed", estado.visao === "cartoes");
+  $("v-tabela").setAttribute("aria-pressed", estado.visao === "tabela");
+  desenharAbas();
+  desenharResumo();
+  desenharAtivos();
+  $("lista").innerHTML = !visiveis.length ? listaVazia()
+    : estado.visao === "tabela" ? tabela() : `<div class="grade">${visiveis.map(cartao).join("")}</div>`;
+}
+function listaVazia() {
+  if (estado.marcacao === "interesse" && !temFiltro()) return `<div class="vazio">Nenhum lote marcado como Quero ainda.<br>Use o botão Quero nos cartões para montar sua lista.</div>`;
+  return `<div class="vazio">Nenhum lote com esses filtros.${temFiltro() ? `<button class="btn" data-limpar>Limpar filtros</button>` : ""}</div>`;
+}
+function desenharAbas() {
+  const base = elegiveis().filter(l => passaFiltros(l, true));
+  const conta_ = { ativos: base.filter(l => l.marcacao !== "descartado").length, sem: base.filter(l => !l.marcacao).length };
+  ["interesse", "talvez", "descartado"].forEach(m => conta_[m] = base.filter(l => l.marcacao === m).length);
+  $("abas").innerHTML = ABAS.map(([k, t]) =>
+    `<button data-m="${k}" aria-pressed="${estado.marcacao === k}">${t} <span class="qtd">${conta_[k]}</span></button>`).join("");
+}
+function desenharResumo() {
+  const q = lotes.filter(l => l.marcacao === "interesse");
+  $("minha-lista").hidden = !q.length;
+  $("r-interesse").textContent = q.length;
+  $("r-atual").textContent = brl(q.reduce((s, l) => s + (l.valor_atual || 0), 0));
+  const comMax = q.filter(l => l.lance_max != null);
+  $("r-max").textContent = comMax.length ? brl(comMax.reduce((s, l) => s + l.lance_max, 0)) : "-";
+  $("r-lucro").textContent = brl(q.reduce((s, l) => s + (conta(l).lucro || 0), 0));
+}
+function temFiltro() {
+  return Object.entries(estado.filtros).some(([, v]) => v);
+}
+function desenharAtivos() {
+  const f = estado.filtros, itens = [];
+  if (f["f-busca"]) itens.push(["f-busca", `Busca: ${f["f-busca"]}`]);
+  for (const [id, cfg] of Object.entries(SELECTS)) if (f[id]) itens.push([id, `${cfg.nome}: ${cfg.texto ? cfg.texto(f[id]) : f[id]}`]);
+  for (const [id, t] of Object.entries(NUMEROS)) if (f[id]) itens.push([id, t(f[id])]);
+  for (const [id, t] of Object.entries(CHECKS)) if (f[id]) itens.push([id, t]);
+  if (f["f-confianca"]) itens.push(["f-confianca", TEXTO_CONF_FILTRO[f["f-confianca"]]]);
+  $("btn-filtros").textContent = itens.length ? `Filtros (${itens.length})` : "Filtros";
+  $("filtros-ver").textContent = `Ver ${plural(visiveis.length, "lote", "lotes")}`;
+  $("ativos").innerHTML = `<b class="num">${plural(visiveis.length, "lote", "lotes")}</b>` +
+    itens.map(([id, t]) => `<button class="filtro-ativo" data-tirar-filtro="${id}" aria-label="Tirar filtro ${esc(t)}">${esc(t)}</button>`).join("") +
+    (itens.length > 1 ? `<button class="limpar" data-limpar>Limpar tudo</button>` : "");
+}
+function alertasDe(l) {
+  const a = [];
+  if (l.removido) a.push(["ruim", "Saiu do leilão"]);
+  if (passouMax(l)) a.push(["ruim", `Passou do seu máximo em ${brl(l.valor_atual - l.lance_max)}`]);
+  else if (l.lance_max != null && l.incremento && l.lances > 0 && l.valor_atual + l.incremento > l.lance_max) a.push(["atencao", "O próximo lance passa do seu máximo"]);
+  if (mudou24h(l) && l.valor_anterior != null && l.valor_atual !== l.valor_anterior) a.push(["atencao", `Era ${brl(l.valor_anterior)}, mudou ${haQuanto(l.valor_mudou_em)}`]);
+  return a;
+}
+function margemHtml(l, c) {
+  const custo = c.lance + c.comissao + c.icms + c.fixos;
+  const pct = Math.min(100, Math.max(0, custo / c.venda * 100));
+  // Com máximo definido, a barra vai até ele e a marca mostra onde o lance está agora.
+  const atual = l.lance_max != null ? Math.min(100, lanceMin(l) / c.venda * 100) : null;
+  return `<div class="margem ${c.lucro < 0 ? "neg" : ""}" role="img" aria-label="O custo ${l.lance_max != null ? "no meu máximo" : "agora"} usa ${Math.round(custo / c.venda * 100)}% da venda pessimista">
+    <i style="width:${pct.toFixed(1)}%"></i>${atual != null ? `<u style="left:${atual.toFixed(1)}%" title="Lance mínimo agora: ${brl(lanceMin(l))}"></u>` : ""}</div>`;
+}
+function cartao(l) {
+  const foto = urlSegura(l.foto), c = conta(l), conf = confiancaDe(l);
+  const etiquetas = [];
+  if (semChave(l)) etiquetas.push(`<span class="etiqueta atencao">Sem chave</span>`);
+  if (conf === "baixa") etiquetas.push(`<span class="etiqueta atencao">Revisar FIPE</span>`);
+  if (l.conservacao && l.conservacao !== "Conservado") etiquetas.push(`<span class="etiqueta">${esc(l.conservacao)}</span>`);
+  (l.tags || "").split(",").map(t => t.trim()).filter(Boolean).forEach(t => etiquetas.push(`<span class="etiqueta tag">${esc(t)}</span>`));
+  const alertas = alertasDe(l).map(([t, m]) => `<div class="alerta ${t}">${m}</div>`).join("");
+  const servicos = (l.servicos || []).length;
+  const numeros = c.fipe == null
+    ? `<div class="numeros"><div><span class="rotulo">Lance atual</span><span class="valor">${brl(l.valor_atual)}</span><span class="nota-sub">${plural(l.lances, "lance", "lances")}</span></div></div>
+       <div class="sem-fipe">${conf === "nao_achei" ? "FIPE não encontrada. Abra para escolher a versão." : "FIPE ainda não consultada."}</div>`
+    : `<div class="numeros">
+         <div><span class="rotulo">Lance atual</span><span class="valor">${brl(l.valor_atual)}</span><span class="nota-sub">${plural(l.lances, "lance", "lances")}</span></div>
+         <div><span class="rotulo">Lucro de referência</span><span class="valor ${c.lucro >= 0 ? "pos" : "neg"}">${brl(c.lucro)}</span><span class="nota-sub">${l.lance_max != null ? `no meu máximo de ${brl(l.lance_max)}` : `lance em ${Math.round(l.valor_atual / c.fipe * 100)}% da FIPE`}</span></div>
+       </div>
+       ${margemHtml(l, c)}
+       <div class="legenda"><span title="${esc(TEXTO_CONFIANCA[conf] || "")}">FIPE <b>${conf === "alta" || conf === "manual" ? "" : "≈ "}${brl(c.fipe)}</b></span><span>Venda ${ajustes.pct_venda}% <b>${brl(c.venda)}</b></span></div>`;
+  return `<article class="cartao m-${esc(l.marcacao)}" data-id="${l.id}" tabindex="0" aria-label="Lote ${l.lote_num ?? ""}, ${esc(l.titulo)}">
+    <div class="foto">${foto ? `<img loading="lazy" src="${esc(foto)}" alt="">` : `<span class="sem-foto">Sem foto no site</span>`}
+      <span class="placa"><small>LOTE</small><b>${l.lote_num ?? "?"}</b></span>
+      ${l.marcacao ? `<span class="selo-marca ${esc(l.marcacao)}">${MARCAS_FEITAS[l.marcacao]}</span>` : ""}
+      ${l.qtd_fotos ? `<span class="qtd-fotos num">${plural(l.qtd_fotos, "foto", "fotos")}</span>` : ""}</div>
+    <div class="miolo">
+      <div><h3>${esc(l.modelo || l.titulo)}</h3><div class="meta">${esc(metaLote(l))}</div></div>
+      ${etiquetas.length ? `<div class="etiquetas">${etiquetas.join("")}</div>` : ""}
+      ${alertas ? `<div class="alertas">${alertas}</div>` : ""}
+      ${l.notas ? `<div class="nota-previa">${esc(l.notas)}</div>` : ""}
+      ${servicos ? `<div class="dica num">${plural(servicos, "serviço previsto", "serviços previstos")}${somaCustos(l.servicos) ? `: ${brl(somaCustos(l.servicos))}` : ""}</div>` : ""}
+      ${numeros}
+    </div>
+    <div class="acoes">${Object.entries(MARCAS).map(([k, t]) =>
+      `<button data-marca="${k}" class="${l.marcacao === k ? "on-" + k : ""}" aria-pressed="${l.marcacao === k}">${t}</button>`).join("")}</div>
+  </article>`;
+}
+function tabela() {
+  const th = (t, o, c = "") => `<th class="${c}">${o ? `<button data-ordem="${o}" aria-pressed="${estado.ordem === o}">${t}${estado.ordem === o ? " ▾" : ""}</button>` : t}</th>`;
+  return `<div class="tabela-caixa"><table class="lotes"><thead><tr>
+    ${th("Lote", "lote")}<th><span hidden>Foto</span></th>${th("Veículo")}
+    ${th("Lance atual", "valor", "dir")}${th("Lances", "lances-d", "dir")}${th("FIPE", "", "dir")}${th(`Venda ${ajustes.pct_venda}%`, "", "dir")}${th("Lucro de ref.", "lucro-d", "dir")}${th("% da FIPE", "pctfipe", "dir")}${th("Serviços", "", "dir")}${th("Meu máx.", "", "dir")}${th("Marcação")}${th("Notas")}
+  </tr></thead><tbody>${visiveis.map(linhaTabela).join("")}</tbody></table></div>`;
+}
+function linhaTabela(l) {
+  const c = conta(l), conf = confiancaDe(l), foto = urlSegura(l.foto);
+  return `<tr class="m-${esc(l.marcacao)}" data-id="${l.id}" tabindex="0">
+    <td class="nlote">${l.lote_num ?? ""}</td>
+    <td>${foto ? `<img loading="lazy" src="${esc(foto)}" alt="">` : `<span class="mini-vazia"></span>`}</td>
+    <td class="veic"><b>${esc(l.modelo || l.titulo)}</b><div class="meta">${esc([marcaNome(l), ANO_CURTO(l), l.cor, semChave(l) ? "Sem chave" : ""].filter(Boolean).join(" · "))}</div></td>
+    <td class="dir forte">${brl(l.valor_atual)}</td>
+    <td class="dir num">${l.lances}</td>
+    <td class="dir num" title="${esc(TEXTO_CONFIANCA[conf] || "")}">${c.fipe == null ? "-" : `${conf === "alta" || conf === "manual" ? "" : `<span class="aprox">≈</span> `}${brl(c.fipe)}`}</td>
+    <td class="dir num">${brl(c.venda)}</td>
+    <td class="dir forte ${c.lucro == null ? "" : c.lucro >= 0 ? "pos" : "neg"}">${brl(c.lucro)}</td>
+    <td class="dir num">${c.fipe ? Math.round(l.valor_atual / c.fipe * 100) + "%" : "-"}</td>
+    <td class="dir num">${l.servicos && l.servicos.length ? `${l.servicos.length}${somaCustos(l.servicos) ? ` · ${brl(somaCustos(l.servicos))}` : ""}` : "-"}</td>
+    <td class="dir num">${l.lance_max != null ? `<span class="${passouMax(l) ? "neg" : ""}">${brl(l.lance_max)}</span>` : "-"}</td>
+    <td>${l.marcacao ? esc(MARCAS_FEITAS[l.marcacao]) : "-"}</td>
+    <td class="nota">${esc(l.notas)}</td>
+  </tr>`;
+}
+/* Marcar um lote não precisa redesenhar a grade inteira (as fotos piscariam). */
+function atualizarItem(l) {
+  const el = document.querySelector(`#lista [data-id="${l.id}"]`);
+  if (!el || !passaFiltros(l)) return desenhar();
+  el.outerHTML = estado.visao === "tabela" ? linhaTabela(l) : cartao(l);
+  desenharAbas();
+  desenharResumo();
+}
+
+/* ------------------------------------------------ ficha do lote */
+async function abrir(id) {
+  aberto = id;
+  fotoAtual = 0;
+  await desenharFicha();
+}
+function fechar() {
+  aberto = null;
+  $("cobertura-ficha").hidden = true;
+  document.body.classList.remove("travado");
+}
+async function obterDetalhe(id) {
+  if (!cacheDetalhe[id]) cacheDetalhe[id] = await API.lote(id);
+  return cacheDetalhe[id];
+}
+function desenharFichaSemTirarFoco() {
+  // Não refaço a ficha com alguém digitando nela.
+  if ($("ficha").contains(document.activeElement) && /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  desenharFicha();
+}
+const fotosDe = (l, d) => (d && d.fotos.length ? d.fotos : (l.foto ? [l.foto] : [])).filter(urlSegura);
+async function desenharFicha() {
+  const l = lotes.find(x => x.id === aberto);
+  if (!l) return fechar();
+  const d = await obterDetalhe(l.id);
+  if (aberto !== l.id) return;
+  const fotos = fotosDe(l, d);
+  const posicao = visiveis.findIndex(x => x.id === l.id);
+  const campos = Object.entries(d.campos).filter(([k]) => k !== "Veículo");
+  const f = $("ficha");
+  const mesmoLote = f.dataset.lote === String(l.id);
+  const rolagem = mesmoLote ? [...f.querySelectorAll(".coluna, .ficha-corpo")].map(c => c.scrollTop) : [];
+  f.dataset.lote = l.id;
+  f.innerHTML = `
+    <header class="ficha-topo">
+      <span class="placa grande"><small>LOTE</small><b>${l.lote_num ?? "?"}</b></span>
+      <div class="ficha-titulo"><h2>${esc(l.titulo)}</h2><div class="meta">${esc([ANO_CURTO(l), l.cor, combustivelNome(l.combustivel), l.conservacao].filter(Boolean).join(" · "))}</div></div>
+      <div class="ficha-acoes">
+        <span class="salvo" id="a-salvo" aria-live="polite"></span>
+        <button class="btn icone" data-acao="ant" title="Lote anterior (seta para a esquerda)" aria-label="Lote anterior" ${posicao <= 0 ? "disabled" : ""}>←</button>
+        <button class="btn icone" data-acao="prox" title="Próximo lote (seta para a direita)" aria-label="Próximo lote" ${posicao < 0 || posicao >= visiveis.length - 1 ? "disabled" : ""}>→</button>
+        ${urlSegura(l.url) ? `<a class="btn" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">Abrir no site</a>` : ""}
+        <button class="btn icone" data-acao="fechar" title="Fechar (Esc)" aria-label="Fechar ficha">✕</button>
+      </div>
+    </header>
+    <div class="ficha-corpo">
+      <div class="coluna">
+        ${fotos.length ? `<div class="galeria">
+          <div class="foto-grande"><img id="foto-g" src="${esc(fotos[Math.min(fotoAtual, fotos.length - 1)])}" alt="Foto ${fotoAtual + 1} de ${fotos.length} do lote">
+            ${fotos.length > 1 ? `<button class="seta ant" data-foto="-1" aria-label="Foto anterior">‹</button><button class="seta prox" data-foto="1" aria-label="Próxima foto">›</button>` : ""}
+            <span class="pos-foto num" id="foto-pos">${fotoAtual + 1}/${fotos.length}</span></div>
+          <div class="miniaturas">${fotos.map((u, i) => `<img data-i="${i}" class="${i === fotoAtual ? "ativa" : ""}" src="${esc(u)}" alt="Foto ${i + 1}">`).join("")}</div>
+        </div>` : `<div class="sem-fotos galeria">O site não publicou fotos deste lote.</div>`}
+        ${l.observacoes ? `<section class="secao"><h3>Observações do leiloeiro</h3><div>${esc(l.observacoes)}</div></section>` : ""}
+        <section class="secao"><h3>Dados do lote</h3>
+          ${campos.length ? `<dl class="campos">${campos.map(([k, v]) => `<div class="${k === "Localização" ? "largo" : ""}"><dt>${esc(k)}</dt><dd>${esc(k === "Combustível" ? combustivelNome(v) : k === "Chave" ? textoChave(v) : v)}</dd></div>`).join("")}</dl>`
+            : `<div class="dica">Os detalhes deste lote ainda não foram lidos.</div>`}
+        </section>
+        ${d.historico.length > 1 ? `<section class="secao"><h3>Evolução do lance</h3><table class="hist num"><thead><tr><th>Quando</th><th>Lance</th><th>Lances</th></tr></thead><tbody>
+          ${d.historico.slice().reverse().map(h => `<tr><td>${dataHora(h.em)}</td><td>${brl(h.valor)}</td><td>${h.lances}</td></tr>`).join("")}</tbody></table></section>` : ""}
+        ${d.documentos.length ? `<section class="secao"><h3>Documentos</h3>${d.documentos.filter(x => urlSegura(x.url)).map(x => `<div><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">${esc(x.nome)}</a></div>`).join("")}</section>` : ""}
+      </div>
+      <div class="coluna">
+        <div class="marcador" role="group" aria-label="Marcação do lote">${Object.entries(MARCAS).map(([k, t]) => `<button data-marca="${k}" class="${l.marcacao === k ? "on-" + k : ""}" aria-pressed="${l.marcacao === k}">${t}</button>`).join("")}</div>
+        <div class="resumo-preco">
+          <div><span class="rotulo">Lance atual</span><span class="valor">${brl(l.valor_atual)}</span>
+            <span class="nota-sub num">${plural(l.lances, "lance", "lances")}${d.vencendo_por ? ` · vencendo ${esc(d.vencendo_por)}` : ""}</span></div>
+          <div class="nota-sub num"><div>Inicial ${brl(l.valor_inicial)}</div><div>Incremento ${brl(l.incremento)}</div><div>${(l.visualizacoes ?? 0).toLocaleString("pt-BR")} visualizações</div></div>
+        </div>
+        <div class="alertas" id="alertas-g">${htmlAlertas(l)}</div>
+        <section class="bloco" id="conta-g">${htmlConta(l, d)}</section>
+        <section class="bloco">
+          <h3>${NUVEM ? "Anotações do grupo" : "Minhas anotações"}</h3>
+          <div class="dica" id="a-autor" hidden></div>
+          <div class="dupla">
+            <label class="campo">Meu lance máximo (R$)<input id="a-max" type="number" min="0" step="100" value="${l.lance_max ?? ""}"></label>
+            <label class="campo">Digitar FIPE (opcional, R$)<input id="a-ref" type="number" min="0" step="100" value="${l.valor_ref ?? ""}" placeholder="Usa a automática"></label>
+          </div>
+          <div class="dica num" id="a-folga"></div>
+          <label class="campo">Tags (separe por vírgula)<input id="a-tags" value="${esc(l.tags)}" placeholder="vistoriar, revenda"></label>
+          <label class="campo">Notas<textarea id="a-notas" placeholder="O que você quiser anotar sobre este lote">${esc(l.notas)}</textarea></label>
+        </section>
+        <section class="bloco">
+          <h3>O que fazer no carro</h3>
+          <details class="drop" id="drop-serv">
+            <summary id="drop-resumo"></summary>
+            <div class="drop-lista" id="drop-lista"></div>
+          </details>
+          <div class="itens" id="serv-sel"></div>
+        </section>
+        <div class="dica">Atalhos: ← → trocam de lote · 1 Quero · 2 Talvez · 3 Descartar · Esc fecha. Tudo salva sozinho.</div>
+      </div>
+    </div>`;
+  $("cobertura-ficha").hidden = false;
+  document.body.classList.add("travado");
+  [...f.querySelectorAll(".coluna, .ficha-corpo")].forEach((c, i) => { c.scrollTop = rolagem[i] || 0; });
+  atualizarFolga(l);
+  atualizarAutor(l);
+  desenharServicos(l);
+}
+const htmlAlertas = l => alertasDe(l).map(([t, m]) => `<div class="alerta ${t}">${m}</div>`).join("");
+function htmlConta(l, d) {
+  const c = conta(l), conf = confiancaDe(l);
+  const opcoes = (d && d.fipe_opcoes) || [];
+  const seletor = opcoes.length ? `<label class="campo">Trocar versão usada na FIPE
+      <select id="a-versao"><option value="" ${d.fipe_atual ? "hidden" : ""}>Escolher versão</option>${opcoes.map(o =>
+        `<option value="${esc(o.codigo)}" ${String(o.codigo) === String(d.fipe_atual) ? "selected" : ""}>${esc(o.nome)}</option>`).join("")}</select></label>
+      <div class="dica" id="fipe-msg" aria-live="polite"></div>` : "";
+  const nome = l.valor_ref != null ? "FIPE digitada por você" : esc(l.fipe_nome || "");
+  const cabeca = `<h3>Conta do carro</h3>
+    <div class="versao-fipe">
+      ${nome ? `<div class="nome">${nome}</div>` : ""}
+      <div>${conf ? `<span class="selo ${conf}">${TEXTO_CONFIANCA[conf]}</span>` : ""} ${l.fipe_mes && l.valor_ref == null ? `<span class="dica">Tabela de ${esc(l.fipe_mes)}</span>` : ""}</div>
+    </div>${seletor}`;
+  if (c.fipe == null) {
+    return `${cabeca}<div class="falta">${conf === "nao_achei" ? "Não achei este carro no ano dele na FIPE. Escolha outra versão ou digite o valor nas anotações." : "A FIPE deste lote ainda não foi consultada."}</div>`;
+  }
+  const semComissao = ajustes.comissao_pct == null, semIcms = ajustes.icms_pct == null;
+  const custos = ajustes.custos_fixos || [];
+  const falta = texto => `<span class="falta">${texto}</span>`;
+  return `${cabeca}<table class="conta num">
+    <tr><td>FIPE</td><td>${brl(c.fipe)}</td></tr>
+    <tr><td>Venda pessimista (${ajustes.pct_venda}%)</td><td>${brl(c.venda)}</td></tr>
+    <tr><td>− ${l.lance_max != null ? "Meu lance máximo" : "Lance mínimo agora"}</td><td>${brl(c.lance)}</td></tr>
+    <tr><td>− Comissão${semComissao ? "" : ` (${pctTexto(ajustes.comissao_pct)})`}</td><td>${semComissao ? falta("não informada") : brl(c.comissao)}</td></tr>
+    <tr><td>− ICMS${semIcms ? "" : ` (${pctTexto(ajustes.icms_pct)})`}</td><td>${semIcms ? falta("não informado") : brl(c.icms)}</td></tr>
+    ${custos.length ? custos.map(i => `<tr><td>− ${esc(i.nome)}</td><td>${i.valor == null ? falta("não informado") : brl(i.valor)}</td></tr>`).join("") : `<tr><td>− Outros custos</td><td>${falta("não informados")}</td></tr>`}
+    <tr class="total ${c.lucro >= 0 ? "pos" : "neg"}"><td>Lucro de referência</td><td>${brl(c.lucro)}</td></tr>
+  </table>
+  <div class="dica num">Sem contar os serviços. A conta zera num lance de ${brl(c.empate)}.
+    ${contaFaltaDados() ? `<button class="link" data-abrir-premissas>Preencher o que falta</button>` : ""}</div>`;
+}
+function atualizarConta(l) {
+  const el = $("conta-g");
+  if (el) el.innerHTML = htmlConta(l, cacheDetalhe[l.id]);
+}
+function atualizarFolga(l) {
+  const el = $("a-folga");
+  if (!el) return;
+  const fipe = fipeDe(l), p = [];
+  if (fipe) p.push(`Lance atual em ${Math.round(l.valor_atual / fipe * 100)}% da FIPE`);
+  if (fipe && l.lance_max != null) p.push(`seu máximo em ${Math.round(l.lance_max / fipe * 100)}%`);
+  el.textContent = p.join(" · ");
+  el.hidden = !p.length;
+}
+function trocarFoto(i) {
+  const l = lotes.find(x => x.id === aberto);
+  const fotos = l ? fotosDe(l, cacheDetalhe[aberto]) : [];
+  if (!fotos.length) return;
+  fotoAtual = (i + fotos.length) % fotos.length;
+  $("foto-g").src = fotos[fotoAtual];
+  $("foto-pos").textContent = `${fotoAtual + 1}/${fotos.length}`;
+  document.querySelectorAll(".miniaturas img").forEach((m, n) => m.classList.toggle("ativa", n === fotoAtual));
+  $("tc-img").src = fotos[fotoAtual];
+  $("tc-pos").textContent = `${fotoAtual + 1}/${fotos.length}`;
+}
+function abrirTelaCheia() {
+  const l = lotes.find(x => x.id === aberto);
+  const fotos = l ? fotosDe(l, cacheDetalhe[aberto]) : [];
+  if (!fotos.length) return;
+  $("tc-img").src = fotos[fotoAtual];
+  $("tc-pos").textContent = `${fotoAtual + 1}/${fotos.length}`;
+  $("tela-cheia").hidden = false;
+}
+const fecharTelaCheia = () => { $("tela-cheia").hidden = true; };
+function vizinho(passo) {
+  const i = visiveis.findIndex(l => l.id === aberto);
+  const alvo = visiveis[i + passo];
+  if (i >= 0 && alvo) abrir(alvo.id);
+}
+
+/* ------------------------------------------------ serviços do lote */
+function desenharServicos(l) {
+  const lista = $("drop-lista");
+  if (!lista) return;
+  const marcados = new Set(l.servicos.map(s => s.nome));
+  const catalogo = [...ajustes.servicos];
+  l.servicos.forEach(s => { if (!catalogo.some(c => c.nome === s.nome)) catalogo.push({ nome: s.nome, valor: s.valor }); });
+  atualizarResumoServicos(l);
+  lista.innerHTML = catalogo.map(c => `<label><input type="checkbox" data-serv-nome="${esc(c.nome)}" ${marcados.has(c.nome) ? "checked" : ""}>${esc(c.nome)}${c.valor != null ? `<span class="preco-est num">${brl(c.valor)}</span>` : ""}</label>`).join("")
+    + `<div class="linha-novo"><input id="novo-serv" placeholder="Outro serviço" aria-label="Nome de outro serviço"><button class="btn" data-acao="novo-serv">Adicionar</button></div>`;
+  desenharServicosMarcados(l);
+}
+const atualizarResumoServicos = l => { $("drop-resumo").textContent = l.servicos.length ? plural(l.servicos.length, "serviço selecionado", "serviços selecionados") : "Selecionar serviços"; };
+function desenharServicosMarcados(l) {
+  const faltam = l.servicos.filter(s => s.valor == null).length;
+  $("serv-sel").innerHTML = l.servicos.map((s, i) => `<div class="linha-item">
+      <span>${esc(s.nome)}</span>
+      <input type="number" min="0" step="50" data-serv-i="${i}" value="${s.valor ?? ""}" placeholder="R$" aria-label="Valor de ${esc(s.nome)}">
+      <button class="tirar" data-serv-tirar="${i}" title="Tirar" aria-label="Tirar ${esc(s.nome)}">✕</button>
+    </div>`).join("") + (l.servicos.length ? `<div class="itens-total num"><span>Total previsto, fora do lucro de referência${faltam ? ` (${plural(faltam, "serviço", "serviços")} sem valor)` : ""}</span><span id="serv-total">${brl(somaCustos(l.servicos))}</span></div>` : "");
+}
+function alternarServico(l, nome, ligado) {
+  if (ligado) {
+    const padrao = ajustes.servicos.find(c => c.nome === nome);
+    l.servicos.push({ nome, valor: padrao ? padrao.valor : null });
+  } else {
+    l.servicos = l.servicos.filter(s => s.nome !== nome);
+  }
+  salvarDepois(l, "servicos");
+  atualizarResumoServicos(l);
+  desenharServicosMarcados(l);
+  atualizarItem(l);
+}
+async function salvarAjustes(novos) {
+  ajustes = await API.salvarAjustes(novos);
+  return ajustes;
+}
+async function adicionarServicoNovo(l) {
+  const campo = $("novo-serv"), nome = campo.value.trim();
+  if (!nome) return;
+  if (!ajustes.servicos.some(c => c.nome === nome)) await salvarAjustes({ ...ajustes, servicos: [...ajustes.servicos, { nome, valor: null }] });
+  if (!l.servicos.some(s => s.nome === nome)) alternarServico(l, nome, true);
+  desenharServicos(l);
+}
+async function trocarVersaoFipe(l, codigo) {
+  const msg = $("fipe-msg");
+  msg.textContent = "Consultando a FIPE...";
+  let corpo;
+  try {
+    corpo = await API.trocarFipe(l, codigo);
+  } catch (erro) {
+    // O seletor volta para a versão que a conta está usando.
+    const atual = cacheDetalhe[l.id] && cacheDetalhe[l.id].fipe_atual;
+    $("a-versao").value = atual == null ? "" : String(atual);
+    msg.textContent = erro.message;
+    return;
+  }
+  Object.assign(l, { fipe_valor: corpo.valor, fipe_nome: corpo.modelo_nome, fipe_confianca: "manual" });
+  if (corpo.mes_ref) l.fipe_mes = corpo.mes_ref;
+  delete cacheDetalhe[l.id];
+  await obterDetalhe(l.id);
+  atualizarConta(l);
+  atualizarFolga(l);
+  atualizarItem(l);
+}
+
+/* ------------------------------------------------ premissas */
+let rascunho = null;
+function linhaPremissa(tipo, item, i) {
+  return `<div class="linha-item">
+    <input data-p-tipo="${tipo}" data-p-i="${i}" data-p-campo="nome" value="${esc(item.nome)}" placeholder="Nome" aria-label="Nome">
+    <input data-p-tipo="${tipo}" data-p-i="${i}" data-p-campo="valor" type="number" min="0" step="50" value="${item.valor ?? ""}" placeholder="R$" aria-label="Valor de ${esc(item.nome)}">
+    <button class="tirar" data-p-tirar="${tipo}" data-p-i="${i}" aria-label="Tirar ${esc(item.nome)}">✕</button>
+  </div>`;
+}
+function desenharPremissas() {
+  $("p-fixos").innerHTML = rascunho.custos_fixos.map((x, i) => linhaPremissa("custos_fixos", x, i)).join("");
+  $("p-servicos").innerHTML = rascunho.servicos.map((x, i) => linhaPremissa("servicos", x, i)).join("");
+}
+function abrirPremissas() {
+  rascunho = JSON.parse(JSON.stringify(ajustes));
+  $("p-venda").value = rascunho.pct_venda;
+  $("p-comissao").value = rascunho.comissao_pct ?? "";
+  $("p-icms").value = rascunho.icms_pct ?? "";
+  $("p-msg").textContent = "";
+  desenharPremissas();
+  $("premissas").hidden = false;
+  document.body.classList.add("travado");
+}
+function fecharPremissas() {
+  $("premissas").hidden = true;
+  if (!aberto) document.body.classList.remove("travado");
+}
+
+/* ------------------------------------------------ salvar e marcar */
+const temporizadores = {};
+function avisarSalvo(id, texto) {
+  const el = $("a-salvo");
+  if (el && aberto === id) el.textContent = texto;
+}
+async function salvar(l) {
+  const campos = [...l._sujos];
+  l._sujos.clear();
+  try {
+    await API.salvarAnotacao(l, campos);
+    avisarSalvo(l.id, "Salvo");
+  } catch {
+    campos.forEach(c => l._sujos.add(c)); // a próxima alteração tenta de novo
+    avisarSalvo(l.id, "Não consegui salvar");
+    recado(NUVEM ? "Não consegui salvar a anotação. Confira sua internet e tente de novo." : "Não consegui salvar a anotação. Confira se o painel continua aberto.");
+  }
+}
+function salvarDepois(l, ...campos) {
+  if (!l._sujos) l._sujos = new Set();
+  campos.forEach(c => l._sujos.add(c));
+  avisarSalvo(l.id, "Salvando...");
+  clearTimeout(temporizadores[l.id]);
+  temporizadores[l.id] = setTimeout(() => salvar(l), 450);
+}
+function marcar(id, marca) {
+  const l = lotes.find(x => x.id === id);
+  if (!l) return;
+  const anterior = l.marcacao;
+  l.marcacao = l.marcacao === marca ? "" : marca;
+  salvarDepois(l, "marcacao");
+  atualizarItem(l);
+  atualizarMarcador(l);
+  if (l.marcacao === "descartado") recado(`Lote ${l.lote_num} descartado`, "Desfazer", () => {
+    l.marcacao = anterior;
+    salvarDepois(l, "marcacao");
+    desenhar();
+    atualizarMarcador(l);
+  });
+}
+function atualizarMarcador(l) {
+  if (aberto !== l.id) return;
+  document.querySelectorAll(".marcador [data-marca]").forEach(b => {
+    const ligado = l.marcacao === b.dataset.marca;
+    b.className = ligado ? "on-" + b.dataset.marca : "";
+    b.setAttribute("aria-pressed", ligado);
+  });
+}
+let temporizadorRecado;
+function recado(texto, acao, fazer) {
+  const el = $("recado");
+  el.innerHTML = `<span>${esc(texto)}</span>${acao ? `<button id="recado-acao">${esc(acao)}</button>` : ""}`;
+  el.hidden = false;
+  if (acao) $("recado-acao").onclick = () => { el.hidden = true; fazer(); };
+  clearTimeout(temporizadorRecado);
+  temporizadorRecado = setTimeout(() => { el.hidden = true; }, 6000);
+}
+
+/* ------------------------------------------------ eventos */
+function limparFiltros() {
+  estado.filtros = {};
+  gravarLocal();
+  CAMPOS_TEXTO.forEach(id => { $(id).value = ""; });
+  Object.keys(CHECKS).forEach(id => { $(id).checked = false; });
+  desenhar();
+}
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-abrir-premissas]")) { abrirPremissas(); return; }
+  if (e.target.closest("[data-limpar]")) { limparFiltros(); return; }
+  const tf = e.target.closest("[data-tirar-filtro]");
+  if (tf) {
+    const id = tf.dataset.tirarFiltro;
+    delete estado.filtros[id];
+    if (id in CHECKS) $(id).checked = false; else $(id).value = "";
+    gravarLocal(); desenhar();
+    return;
+  }
+  const pNovo = e.target.closest("[data-p-novo]");
+  if (pNovo) { rascunho[pNovo.dataset.pNovo].push({ nome: "", valor: null }); desenharPremissas(); return; }
+  const pTirar = e.target.closest("[data-p-tirar]");
+  if (pTirar) { rascunho[pTirar.dataset.pTirar].splice(+pTirar.dataset.pI, 1); desenharPremissas(); return; }
+  if (e.target.id === "premissas") { fecharPremissas(); return; }
+  if (e.target.id === "cobertura-ficha") { fechar(); return; }
+  const tirar = e.target.closest("[data-serv-tirar]");
+  if (tirar) {
+    const l = lotes.find(x => x.id === aberto);
+    alternarServico(l, l.servicos[+tirar.dataset.servTirar].nome, false);
+    desenharServicos(l);
+    return;
+  }
+  const b = e.target.closest("[data-marca]");
+  if (b) {
+    const dono = b.closest("#lista [data-id]");
+    marcar(dono ? +dono.dataset.id : aberto, b.dataset.marca);
+    return;
+  }
+  const m = e.target.closest("[data-m]");
+  if (m) { estado.marcacao = m.dataset.m; gravarLocal(); desenhar(); return; }
+  const o = e.target.closest("button[data-ordem]");
+  if (o) { estado.ordem = o.dataset.ordem; gravarLocal(); desenhar(); return; }
+  const a = e.target.closest("[data-acao]");
+  if (a) {
+    ({ ant: () => vizinho(-1), prox: () => vizinho(1), fechar,
+       "novo-serv": () => adicionarServicoNovo(lotes.find(x => x.id === aberto)) })[a.dataset.acao]();
+    return;
+  }
+  const f = e.target.closest("[data-foto]");
+  if (f) { trocarFoto(fotoAtual + +f.dataset.foto); return; }
+  if (e.target.id === "tc-fechar" || e.target.id === "tela-cheia") { fecharTelaCheia(); return; }
+  if (e.target.id === "foto-g") { abrirTelaCheia(); return; }
+  const t = e.target.closest(".miniaturas img");
+  if (t) { trocarFoto(+t.dataset.i); return; }
+  const c = e.target.closest("#lista [data-id]");
+  if (c) abrir(+c.dataset.id);
+});
+document.addEventListener("input", e => {
+  const p = e.target.dataset;
+  if (p.pTipo) {
+    rascunho[p.pTipo][+p.pI][p.pCampo] = p.pCampo === "valor" ? (e.target.value === "" ? null : +e.target.value) : e.target.value;
+    return;
+  }
+  const l = lotes.find(x => x.id === aberto);
+  if (!l) return;
+  if (p.servI !== undefined) {
+    l.servicos[+p.servI].valor = e.target.value === "" ? null : +e.target.value;
+    salvarDepois(l, "servicos");
+    $("serv-total").textContent = brl(somaCustos(l.servicos));
+    return;
+  }
+  const campo = { "a-max": "lance_max", "a-ref": "valor_ref", "a-tags": "tags", "a-notas": "notas" }[e.target.id];
+  if (!campo) return;
+  const numerico = campo === "lance_max" || campo === "valor_ref";
+  l[campo] = numerico ? (e.target.value === "" ? null : +e.target.value) : e.target.value;
+  salvarDepois(l, campo);
+  atualizarFolga(l);
+  if (numerico) atualizarConta(l);
+  $("alertas-g").innerHTML = htmlAlertas(l);
+  desenharResumo();
+});
+document.addEventListener("change", e => {
+  const l = lotes.find(x => x.id === aberto);
+  if (e.target.id === "a-versao") { if (e.target.value) trocarVersaoFipe(l, e.target.value); return; }
+  if (e.target.dataset.servNome) { alternarServico(l, e.target.dataset.servNome, e.target.checked); return; }
+  if (e.target.dataset.servI !== undefined) { desenharServicosMarcados(l); atualizarItem(l); return; }
+  if (/^a-/.test(e.target.id) && l) atualizarItem(l); // ao sair do campo, reflito na lista
+});
+document.addEventListener("keydown", e => {
+  if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) {
+    if (e.key === "Escape") e.target.blur();
+    return;
+  }
+  if ((e.key === "Enter") && e.target.matches("#lista [data-id]")) { abrir(+e.target.dataset.id); return; }
+  if (!$("premissas").hidden) {
+    if (e.key === "Escape") fecharPremissas();
+    return;
+  }
+  if (!$("tela-cheia").hidden) {
+    if (e.key === "Escape") fecharTelaCheia();
+    else if (e.key === "ArrowLeft") trocarFoto(fotoAtual - 1);
+    else if (e.key === "ArrowRight") trocarFoto(fotoAtual + 1);
+    return;
+  }
+  if (!aberto) return;
+  if (e.key === "Escape") fechar();
+  else if (e.key === "ArrowLeft") vizinho(-1);
+  else if (e.key === "ArrowRight") vizinho(1);
+  else if (e.key === "1") marcar(aberto, "interesse");
+  else if (e.key === "2") marcar(aberto, "talvez");
+  else if (e.key === "3") marcar(aberto, "descartado");
+});
+
+CAMPOS_TEXTO.forEach(id => $(id).addEventListener("input", () => {
+  if ($(id).value) estado.filtros[id] = $(id).value; else delete estado.filtros[id];
+  gravarLocal();
+  desenhar();
+}));
+Object.keys(CHECKS).forEach(id => $(id).addEventListener("change", () => {
+  if ($(id).checked) estado.filtros[id] = true; else delete estado.filtros[id];
+  gravarLocal();
+  desenhar();
+}));
+$("ordem").addEventListener("change", e => { estado.ordem = e.target.value; gravarLocal(); desenhar(); });
+$("v-cartoes").onclick = () => { estado.visao = "cartoes"; gravarLocal(); desenhar(); };
+$("v-tabela").onclick = () => { estado.visao = "tabela"; gravarLocal(); desenhar(); };
+function aplicarMenuFiltros() {
+  $("corpo").classList.toggle("com-filtros", !!estado.filtrosAbertos);
+  $("btn-filtros").setAttribute("aria-expanded", !!estado.filtrosAbertos);
+}
+$("btn-filtros").onclick = $("filtros-ver").onclick = () => {
+  estado.filtrosAbertos = !estado.filtrosAbertos;
+  gravarLocal();
+  aplicarMenuFiltros();
+};
+$("btn-premissas").onclick = abrirPremissas;
+$("p-cancelar").onclick = fecharPremissas;
+$("p-salvar").onclick = async () => {
+  try {
+    await salvarAjustes({ ...rascunho, pct_venda: $("p-venda").value, comissao_pct: $("p-comissao").value, icms_pct: $("p-icms").value });
+    fecharPremissas();
+    desenhar();
+    desenharAvisos();
+    if (aberto) desenharFicha();
+    recado("Premissas salvas");
+  } catch (erro) { $("p-msg").textContent = erro.message; }
+};
+$("btn-coletar").onclick = async () => {
+  $("btn-coletar").disabled = true;
+  $("btn-coletar").textContent = "Atualizando...";
+  await API.coletar();
+  setTimeout(carregar, 1500);
+};
+
+/* ------------------------------------------------ início */
+CAMPOS_TEXTO.forEach(id => { if (estado.filtros[id]) $(id).value = estado.filtros[id]; });
+Object.keys(CHECKS).forEach(id => { $(id).checked = !!estado.filtros[id]; });
+if (matchMedia("(max-width: 860px)").matches) estado.filtrosAbertos = false; // no celular sempre abre na lista
+aplicarMenuFiltros();
+function perdiContato() {
+  $("avisos").innerHTML = NUVEM
+    ? `<div class="aviso erro">Não consegui falar com o GitHub. Confira sua internet; os dados na tela podem estar velhos.</div>`
+    : `<div class="aviso erro">Perdi contato com o painel. Abra de novo pelo arquivo Abrir painel.</div>`;
+}
+async function verificarNovidades() {
+  if (document.hidden) return;
+  try {
+    if (await API.temNovidade()) await carregar();
+    else if (NUVEM) { meta.agora = agoraLocal(); desenharCabecalho(); desenharAvisos(); }
+  } catch { perdiContato(); }
+}
+function iniciarPainel() {
+  carregar().catch(perdiContato);
+  setInterval(verificarNovidades, NUVEM ? 20000 : 30000);
+  document.addEventListener("visibilitychange", verificarNovidades);
+}
+const deB64 = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
+async function abrirAcesso(senha) {
+  const a = NUVEM.acesso;
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(senha), "PBKDF2", false, ["deriveKey"]);
+  const chave = await crypto.subtle.deriveKey({ name: "PBKDF2", hash: "SHA-256", salt: deB64(a.sal), iterations: a.iteracoes }, base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  return new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: deB64(a.iv) }, chave, deB64(a.cifra)));
+}
+function lerSessao() { try { return JSON.parse(localStorage.getItem(CHAVE_SESSAO) || "null"); } catch { return null; } }
+function sessaoExpirada() {
+  try { localStorage.removeItem(CHAVE_SESSAO); } catch {}
+  location.reload();
+}
+function entrarNoPainel(sessao) {
+  tokenBase = sessao.token;
+  eu = sessao.nome;
+  $("login").hidden = true;
+  $("btn-coletar").hidden = true;
+  $("btn-sair").hidden = false;
+  iniciarPainel();
+}
+function iniciarNuvem() {
+  $("titulo").textContent = $("login-titulo").textContent = document.title = NUVEM.nome_leilao || "Painel do leilão";
+  const sessao = lerSessao();
+  if (sessao && sessao.token) return entrarNoPainel(sessao);
+  $("login").hidden = false;
+  if (!NUVEM.acesso) {
+    $("login-erro").textContent = "O acesso ainda não foi configurado.";
+    $("login-entrar").disabled = true;
+    return;
+  }
+  $("login-nome").focus();
+  $("login-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    $("login-erro").textContent = "";
+    $("login-entrar").disabled = true;
+    $("login-entrar").textContent = "Entrando...";
+    const nome = $("login-nome").value.trim();
+    try {
+      const sessaoNova = { token: await abrirAcesso($("login-senha").value), nome };
+      try { localStorage.setItem(CHAVE_SESSAO, JSON.stringify(sessaoNova)); } catch {}
+      entrarNoPainel(sessaoNova);
+    } catch {
+      $("login-erro").textContent = "Senha incorreta.";
+      $("login-entrar").disabled = false;
+      $("login-entrar").textContent = "Entrar";
+    }
+  });
+}
+$("btn-sair").onclick = () => sessaoExpirada();
+if (NUVEM) iniciarNuvem();
+else iniciarPainel();
+</script>
+</body>
+</html>
