@@ -151,8 +151,9 @@ input::placeholder, textarea::placeholder { color: var(--suave); opacity: .85; }
 .cartao.m-talvez { border-color: var(--atencao); box-shadow: 0 0 0 1px var(--atencao); }
 .cartao.m-descartado { opacity: .62; }
 .cartao.m-descartado img { filter: grayscale(1); }
-.foto { position: relative; aspect-ratio: 16 / 10; background: var(--superficie-2); }
-.foto img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* A imagem fica fora do fluxo: foto vertical não estica o cartão nem a linha inteira. */
+.foto { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--superficie-2); }
+.foto img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
 .foto .placa { position: absolute; top: 8px; left: 8px; }
 .foto .qtd-fotos { position: absolute; right: 8px; bottom: 8px; padding: 1px 7px; border-radius: 4px; background: rgba(10, 16, 22, .74); color: #fff; font-size: 12px; font-weight: 500; }
 .foto .sem-foto { position: absolute; inset: 0; display: grid; place-items: center; color: var(--suave); font-size: 13px; }
@@ -227,7 +228,7 @@ table.lotes { width: 100%; border-collapse: separate; border-spacing: 0; }
 .coluna { min-height: 0; overflow-y: auto; padding: 14px; display: grid; grid-auto-rows: max-content; gap: 16px; scrollbar-width: thin; }
 .coluna + .coluna { border-left: 1px solid var(--linha); background: var(--superficie-2); }
 .foto-grande { position: relative; aspect-ratio: 16 / 10; max-width: 100%; background: #0b0f14; border-radius: 6px; overflow: hidden; }
-.foto-grande img { display: block; width: 100%; height: 100%; object-fit: contain; cursor: zoom-in; }
+.foto-grande img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; cursor: zoom-in; }
 .seta { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 54px; background: rgba(10, 16, 22, .62); color: #fff; border: 0; border-radius: 5px; font-size: 20px; line-height: 1; }
 .seta:hover { background: rgba(10, 16, 22, .86); }
 .seta.ant { left: 8px; } .seta.prox { right: 8px; }
