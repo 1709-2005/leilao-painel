@@ -687,6 +687,8 @@ const apiNuvem = {
       lerArquivo("lotes.json", { grande: true }), lerArquivo("anotacoes.json"), lerArquivo("fipe.json", { grande: true }),
       lerArquivo("fipe_manual.json"), lerArquivo("premissas.json"), lerArquivo("coletas.json"),
     ]);
+    anotacoesVistas.clear();
+    Object.entries(anot.dados || {}).forEach(([id, a]) => anotacoesVistas.set(+id, a));
     const lista = (coletas.dados && coletas.dados.coletas) || [];
     versaoColeta = assinaturaColeta(lista[0]);
     const ultimaBoa = lista.find(c => ["ok", "parcial"].includes(c.status));
@@ -784,11 +786,13 @@ const apiNuvem = {
 const API = NUVEM ? apiNuvem : apiLocal;
 
 /* Mudanças feitas pelos outros sócios entram na tela sem recarregar. */
+const anotacoesVistas = new Map();
 function aplicarMudancasDeAnotacoes(mapa) {
   lotes.forEach(l => {
     const a = mapa[l.id];
-    if (!a || a.atualizado_em === l.atualizado_em) return;
-    aplicarAnotacaoRemota({ ...a, lote_id: l.id });
+    if (!a) return;
+    if (a.atualizado_em !== l.atualizado_em) aplicarAnotacaoRemota({ ...a, lote_id: l.id });
+    anotacoesVistas.set(l.id, a);
   });
 }
 function aplicarAnotacaoRemota(a) {
@@ -799,10 +803,18 @@ function aplicarAnotacaoRemota(a) {
   const campoTela = { lance_max: "a-max", valor_ref: "a-ref", tags: "a-tags", notas: "a-notas" };
   const sujos = l._sujos || new Set();
   const padrao = { marcacao: "", lance_max: null, valor_ref: null, tags: "", notas: "", servicos: [] };
+  const visto = anotacoesVistas.get(l.id) || {};
+  let disputado = false;
   Object.keys(padrao).forEach(c => {
-    if (sujos.has(c) || (aberto === l.id && foco === campoTela[c])) return;
+    if (sujos.has(c) || (aberto === l.id && foco === campoTela[c])) {
+      // Estou mexendo neste campo e outro sócio acabou de mudar o mesmo campo.
+      const mudouLa = JSON.stringify(a[c] ?? padrao[c]) !== JSON.stringify(visto[c] ?? padrao[c]);
+      if (mudouLa && a.atualizado_por && a.atualizado_por !== eu) disputado = true;
+      return;
+    }
     l[c] = a[c] ?? padrao[c];
   });
+  if (disputado) recado(`${a.atualizado_por} acabou de mudar o mesmo campo do lote ${l.lote_num}. Vale quem salvar por último; o histórico guarda as duas versões.`);
   l.atualizado_por = a.atualizado_por;
   l.atualizado_em = a.atualizado_em;
   atualizarItem(l);
@@ -1390,25 +1402,39 @@ function avisarSalvo(id, texto) {
   const el = $("a-salvo");
   if (el && aberto === id) el.textContent = texto;
 }
+const pendentes = new Set();
 async function salvar(l) {
   const campos = [...l._sujos];
+  if (!campos.length) { pendentes.delete(l.id); return; }
   l._sujos.clear();
   try {
     await API.salvarAnotacao(l, campos);
+    if (l._sujos.size) return; // digitou mais enquanto salvava: o próximo salvamento já está agendado
+    pendentes.delete(l.id);
     avisarSalvo(l.id, "Salvo");
   } catch {
-    campos.forEach(c => l._sujos.add(c)); // a próxima alteração tenta de novo
-    avisarSalvo(l.id, "Não consegui salvar");
-    recado(NUVEM ? "Não consegui salvar a anotação. Confira sua internet e tente de novo." : "Não consegui salvar a anotação. Confira se o painel continua aberto.");
+    // Nada se perde: guardo o que falta e tento de novo sozinho.
+    campos.forEach(c => l._sujos.add(c));
+    avisarSalvo(l.id, "Não salvou ainda");
+    recado(`Não consegui salvar o lote ${l.lote_num}. Vou tentar de novo em instantes; não feche a página.`);
+    clearTimeout(temporizadores[l.id]);
+    temporizadores[l.id] = setTimeout(() => salvar(l), 5000);
   }
 }
 function salvarDepois(l, ...campos) {
   if (!l._sujos) l._sujos = new Set();
   campos.forEach(c => l._sujos.add(c));
+  pendentes.add(l.id);
   avisarSalvo(l.id, "Salvando...");
   clearTimeout(temporizadores[l.id]);
-  temporizadores[l.id] = setTimeout(() => salvar(l), 450);
+  // Na base do GitHub cada gravação é um commit: espero uma pausa maior na digitação.
+  temporizadores[l.id] = setTimeout(() => salvar(l), NUVEM ? 1200 : 450);
 }
+window.addEventListener("beforeunload", e => {
+  if (!pendentes.size) return;
+  e.preventDefault();
+  e.returnValue = "";
+});
 function marcar(id, marca) {
   const l = lotes.find(x => x.id === id);
   if (!l) return;
