@@ -337,10 +337,13 @@ table.conta { width: 100%; border-collapse: collapse; }
   .modal { height: 100%; border-radius: 0; width: 100%; }
 }
 @media (max-width: 860px) {
-  .topo { position: static; padding: 10px 16px; }
-  .topo-acoes { margin-left: 0; }
-  .topo-acoes .status { flex-basis: 100%; }
-  .topo-acoes .btn { min-height: 32px; padding: 3px 10px; font-size: 13px; }
+  /* Continua fixo no topo ao rolar, só que mais baixo para sobrar tela para os lotes. */
+  .topo { padding: 6px 16px; gap: 4px 12px; }
+  .topo h1 { font-size: 18px; }
+  .topo .sub { font-size: 12px; }
+  .topo-acoes { margin-left: 0; gap: 6px; }
+  .topo-acoes .status { font-size: 12px; margin-right: 0; }
+  .topo-acoes .btn { min-height: 28px; padding: 2px 9px; font-size: 12.5px; }
   .minha-lista { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
   .minha-lista h2 { grid-column: 1 / -1; }
   .corpo.com-filtros { grid-template-columns: minmax(0, 1fr); }
@@ -464,7 +467,7 @@ table.conta { width: 100%; border-collapse: collapse; }
         <div><button class="btn" data-p-novo="custos_fixos">Adicionar custo</button></div>
       </section>
       <section class="grupo">
-        <div><h3>Lista de serviços</h3><p class="dica">Ficam fora do lucro de referência. O valor é a estimativa padrão; em cada carro dá para ajustar.</p></div>
+        <div><h3>Lista de serviços</h3><p class="dica">Os marcados em cada carro entram no lucro de referência. O valor é a estimativa padrão; em cada carro dá para ajustar.</p></div>
         <div class="itens colunas" id="p-servicos"></div>
         <div><button class="btn" data-p-novo="servicos">Adicionar serviço</button></div>
       </section>
@@ -507,7 +510,7 @@ const MARCAS_FEITAS = { interesse: "Quero", talvez: "Talvez", descartado: "Desca
 const ABAS = [["ativos", "Todos"], ["interesse", "Quero"], ["talvez", "Talvez"], ["sem", "Sem marcação"], ["descartado", "Descartados"]];
 
 let lotes = [], meta = {}, visiveis = [], aberto = null, cacheDetalhe = {}, fotoAtual = 0, ultimaColeta = null, pronto = false;
-let ajustes = { pct_venda: 70, comissao_pct: null, custos_fixos: [], servicos: [] };
+let ajustes = { pct_venda: 60, comissao_pct: null, custos_fixos: [], servicos: [] };
 const estado = Object.assign({ marcacao: "ativos", ordem: "lote", visao: "cartoes", filtros: {} }, lerLocal());
 
 function lerLocal() { try { return JSON.parse(localStorage.getItem("leilao-v2") || "{}"); } catch { return {}; } }
@@ -551,7 +554,7 @@ function haQuanto(iso) {
 }
 
 /* ------------------------------------------------ a conta do carro */
-/* venda pessimista - lance - comissão - ICMS - outros custos. Serviços ficam de fora.
+/* venda pessimista - lance - comissão - ICMS - outros custos - serviços previstos no carro.
    O lance da conta é o meu máximo, se eu tiver definido; senão, o mínimo aceito agora. */
 const fipeDe = l => l.valor_ref ?? l.fipe_valor ?? null;
 const lanceMin = l => l.lances > 0 ? l.valor_atual + (l.incremento || 0) : l.valor_atual;
@@ -571,10 +574,11 @@ function conta(l) {
   const comissao = lance * (ajustes.comissao_pct || 0) / 100;
   const icms = lance * (ajustes.icms_pct || 0) / 100;
   const fixos = somaCustos(ajustes.custos_fixos);
-  if (fipe == null) return { fipe, lance, comissao, icms, fixos, venda: null, lucro: null, empate: null };
+  const servicos = somaCustos(l.servicos);
+  if (fipe == null) return { fipe, lance, comissao, icms, fixos, servicos, venda: null, lucro: null, empate: null };
   const venda = fipe * ajustes.pct_venda / 100;
-  return { fipe, lance, comissao, icms, fixos, venda, lucro: venda - lance - comissao - icms - fixos,
-    empate: (venda - fixos) / (1 + ((ajustes.comissao_pct || 0) + (ajustes.icms_pct || 0)) / 100) };
+  return { fipe, lance, comissao, icms, fixos, servicos, venda, lucro: venda - lance - comissao - icms - fixos - servicos,
+    empate: (venda - fixos - servicos) / (1 + ((ajustes.comissao_pct || 0) + (ajustes.icms_pct || 0)) / 100) };
 }
 const confiancaDe = l => l.valor_ref != null ? "manual" : (l.fipe_valor == null ? (l.fipe_confianca ? "nao_achei" : "") : l.fipe_confianca);
 const TEXTO_CONFIANCA = { alta: "Versão provável", media: "Versão aproximada", baixa: "Revisar versão", manual: "Escolhida por você", nao_achei: "Não encontrada" };
@@ -1056,7 +1060,7 @@ function alertasDe(l) {
   return a;
 }
 function margemHtml(l, c) {
-  const custo = c.lance + c.comissao + c.icms + c.fixos;
+  const custo = c.lance + c.comissao + c.icms + c.fixos + c.servicos;
   const pct = Math.min(100, Math.max(0, custo / c.venda * 100));
   // Com máximo definido, a barra vai até ele e a marca mostra onde o lance está agora.
   const atual = l.lance_max != null ? Math.min(100, lanceMin(l) / c.venda * 100) : null;
@@ -1259,9 +1263,10 @@ function htmlConta(l, d) {
     <tr><td>− Comissão${semComissao ? "" : ` (${pctTexto(ajustes.comissao_pct)})`}</td><td>${semComissao ? falta("não informada") : brl(c.comissao)}</td></tr>
     <tr><td>− ICMS${semIcms ? "" : ` (${pctTexto(ajustes.icms_pct)})`}</td><td>${semIcms ? falta("não informado") : brl(c.icms)}</td></tr>
     ${custos.length ? custos.map(i => `<tr><td>− ${esc(i.nome)}</td><td>${i.valor == null ? falta("não informado") : brl(i.valor)}</td></tr>`).join("") : `<tr><td>− Outros custos</td><td>${falta("não informados")}</td></tr>`}
+    ${l.servicos.length ? l.servicos.map(s => `<tr><td>− ${esc(s.nome)}</td><td>${s.valor == null ? falta("sem valor") : brl(s.valor)}</td></tr>`).join("") : `<tr><td>− Serviços no carro</td><td>${brl(0)}</td></tr>`}
     <tr class="total ${c.lucro >= 0 ? "pos" : "neg"}"><td>Lucro de referência</td><td>${brl(c.lucro)}</td></tr>
   </table>
-  <div class="dica num">Sem contar os serviços. A conta zera num lance de ${brl(c.empate)}.
+  <div class="dica num">Já com os serviços previstos. A conta zera num lance de ${brl(c.empate)}.
     ${contaFaltaDados() ? `<button class="link" data-abrir-premissas>Preencher o que falta</button>` : ""}</div>`;
 }
 function atualizarConta(l) {
@@ -1322,7 +1327,7 @@ function desenharServicosMarcados(l) {
       <span>${esc(s.nome)}</span>
       <input type="number" min="0" step="50" data-serv-i="${i}" value="${s.valor ?? ""}" placeholder="R$" aria-label="Valor de ${esc(s.nome)}">
       <button class="tirar" data-serv-tirar="${i}" title="Tirar" aria-label="Tirar ${esc(s.nome)}">✕</button>
-    </div>`).join("") + (l.servicos.length ? `<div class="itens-total num"><span>Total previsto, fora do lucro de referência${faltam ? ` (${plural(faltam, "serviço", "serviços")} sem valor)` : ""}</span><span id="serv-total">${brl(somaCustos(l.servicos))}</span></div>` : "");
+    </div>`).join("") + (l.servicos.length ? `<div class="itens-total num"><span>Total previsto, já descontado no lucro de referência${faltam ? ` (${plural(faltam, "serviço", "serviços")} sem valor)` : ""}</span><span id="serv-total">${brl(somaCustos(l.servicos))}</span></div>` : "");
 }
 function alternarServico(l, nome, ligado) {
   if (ligado) {
