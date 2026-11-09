@@ -158,6 +158,15 @@ input::placeholder, textarea::placeholder { color: var(--suave); opacity: .85; }
 .foto .qtd-fotos { position: absolute; right: 8px; bottom: 8px; padding: 1px 7px; border-radius: 4px; background: rgba(10, 16, 22, .74); color: #fff; font-size: 12px; font-weight: 500; }
 .foto .sem-foto { position: absolute; inset: 0; display: grid; place-items: center; color: var(--suave); font-size: 13px; }
 .foto .selo-marca { position: absolute; top: 8px; right: 8px; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+/* Estrela: destaque à parte, vale junto com Quero, Talvez ou Descartar. */
+.estrela { display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0; background: rgba(10, 16, 22, .62); color: #fff;
+  border: 0; border-radius: 50%; font-size: 20px; line-height: 1; }
+.estrela:hover { background: rgba(10, 16, 22, .86); }
+.estrela[aria-pressed="true"] { color: #f6b600; }
+.foto .estrela { position: absolute; left: 8px; bottom: 8px; }
+.btn.estrela-ficha { font-size: 20px; color: var(--suave); }
+.btn.estrela-ficha[aria-pressed="true"] { color: #f6b600; border-color: #f6b600; background: var(--atencao-fundo); }
+.lotes .no-estrela { color: #f6b600; font-size: 15px; }
 .selo-marca.interesse { background: var(--bom); color: var(--superficie); }
 .selo-marca.talvez { background: var(--atencao); color: var(--superficie); }
 .selo-marca.descartado { background: var(--suave); color: var(--superficie); }
@@ -507,7 +516,7 @@ table.conta { width: 100%; border-collapse: collapse; }
 const $ = id => document.getElementById(id);
 const MARCAS = { interesse: "Quero", talvez: "Talvez", descartado: "Descartar" };
 const MARCAS_FEITAS = { interesse: "Quero", talvez: "Talvez", descartado: "Descartado" };
-const ABAS = [["ativos", "Todos"], ["interesse", "Quero"], ["talvez", "Talvez"], ["sem", "Sem marcação"], ["descartado", "Descartados"]];
+const ABAS = [["ativos", "Todos"], ["estrela", "★ Estrelas"], ["interesse", "Quero"], ["talvez", "Talvez"], ["sem", "Sem marcação"], ["descartado", "Descartados"]];
 
 let lotes = [], meta = {}, visiveis = [], aberto = null, cacheDetalhe = {}, fotoAtual = 0, ultimaColeta = null, pronto = false;
 let ajustes = { pct_venda: 60, comissao_pct: null, custos_fixos: [], servicos: [] };
@@ -682,6 +691,7 @@ function descreverAlteracao(l, campos) {
     marcacao: l.marcacao ? `marcado como ${MARCAS_FEITAS[l.marcacao]}` : "marcação removida",
     lance_max: l.lance_max != null ? `lance máximo ${brl(l.lance_max)}` : "lance máximo removido",
     valor_ref: "FIPE digitada", tags: "tags", notas: "notas", servicos: "serviços",
+    estrela: l.estrela ? "estrela marcada" : "estrela removida",
   }[c]));
   return `Lote ${l.lote_num}: ${partes.join(", ")} (${eu})`;
 }
@@ -710,6 +720,7 @@ const apiNuvem = {
         return {
           ...l,
           marcacao: a.marcacao || "", lance_max: a.lance_max ?? null, valor_ref: a.valor_ref ?? null,
+          estrela: !!a.estrela,
           tags: a.tags || "", notas: a.notas || "", servicos_json: JSON.stringify(a.servicos || []),
           atualizado_por: a.atualizado_por || null, atualizado_em: a.atualizado_em || null,
           fipe_valor: m ? m.valor : f.valor ?? null,
@@ -732,7 +743,7 @@ const apiNuvem = {
     const valores = {};
     campos.forEach(c => { valores[c] = l[c]; });
     await gravarArquivo("anotacoes.json", mapa => {
-      mapa[l.id] = { marcacao: "", lance_max: null, valor_ref: null, tags: "", notas: "", servicos: [], ...mapa[l.id], ...valores, atualizado_por: eu, atualizado_em: new Date().toISOString() };
+      mapa[l.id] = { marcacao: "", estrela: false, lance_max: null, valor_ref: null, tags: "", notas: "", servicos: [], ...mapa[l.id], ...valores, atualizado_por: eu, atualizado_em: new Date().toISOString() };
       return mapa;
     }, descreverAlteracao(l, campos));
   },
@@ -807,7 +818,7 @@ function aplicarAnotacaoRemota(a) {
   const foco = document.activeElement ? document.activeElement.id : "";
   const campoTela = { lance_max: "a-max", valor_ref: "a-ref", tags: "a-tags", notas: "a-notas" };
   const sujos = l._sujos || new Set();
-  const padrao = { marcacao: "", lance_max: null, valor_ref: null, tags: "", notas: "", servicos: [] };
+  const padrao = { marcacao: "", estrela: false, lance_max: null, valor_ref: null, tags: "", notas: "", servicos: [] };
   const visto = anotacoesVistas.get(l.id) || {};
   let disputado = false;
   Object.keys(padrao).forEach(c => {
@@ -879,7 +890,7 @@ async function carregar() {
   desenharAvisos();
 }
 const assinatura = l => `${l.detalhes_em}|${l.valor_atual}|${l.lances}|${l.fipe_valor}`;
-const pegarAnot = l => ({ marcacao: l.marcacao, lance_max: l.lance_max, valor_ref: l.valor_ref, tags: l.tags, notas: l.notas, servicos: l.servicos });
+const pegarAnot = l => ({ marcacao: l.marcacao, estrela: !!l.estrela, lance_max: l.lance_max, valor_ref: l.valor_ref, tags: l.tags, notas: l.notas, servicos: l.servicos });
 
 /* ------------------------------------------------ cabeçalho e avisos */
 function desenharCabecalho() {
@@ -961,7 +972,8 @@ function passaFiltros(l, ignorarMarcacao) {
   const f = estado.filtros;
   if (!ignorarMarcacao) {
     const m = estado.marcacao;
-    if (m === "ativos" && l.marcacao === "descartado") return false;
+    if (m === "estrela") { if (!l.estrela) return false; }
+    else if (m === "ativos" && l.marcacao === "descartado") return false;
     if (m === "sem" && l.marcacao) return false;
     if (["interesse", "talvez", "descartado"].includes(m) && l.marcacao !== m) return false;
   }
@@ -1003,7 +1015,7 @@ const ORDENS = {
 };
 
 /* ------------------------------------------------ desenho da lista */
-const elegiveis = () => lotes.filter(l => !l.removido || l.marcacao);
+const elegiveis = () => lotes.filter(l => !l.removido || l.marcacao || l.estrela);
 function desenhar() {
   visiveis = elegiveis().filter(l => passaFiltros(l)).sort(ORDENS[estado.ordem] || ORDENS.lote);
   $("ordem").value = estado.ordem;
@@ -1023,6 +1035,7 @@ function desenharAbas() {
   const base = elegiveis().filter(l => passaFiltros(l, true));
   const conta_ = { ativos: base.filter(l => l.marcacao !== "descartado").length, sem: base.filter(l => !l.marcacao).length };
   ["interesse", "talvez", "descartado"].forEach(m => conta_[m] = base.filter(l => l.marcacao === m).length);
+  conta_.estrela = base.filter(l => l.estrela).length;
   $("abas").innerHTML = ABAS.map(([k, t]) =>
     `<button data-m="${k}" aria-pressed="${estado.marcacao === k}">${t} <span class="qtd">${conta_[k]}</span></button>`).join("");
 }
@@ -1089,6 +1102,7 @@ function cartao(l) {
     <div class="foto">${foto ? `<img loading="lazy" src="${esc(foto)}" alt="">` : `<span class="sem-foto">Sem foto no site</span>`}
       <span class="placa"><small>LOTE</small><b>${l.lote_num ?? "?"}</b></span>
       ${l.marcacao ? `<span class="selo-marca ${esc(l.marcacao)}">${MARCAS_FEITAS[l.marcacao]}</span>` : ""}
+      <button class="estrela" data-estrela aria-pressed="${!!l.estrela}" title="${l.estrela ? "Tirar a estrela" : "Marcar com estrela"}" aria-label="${l.estrela ? "Tirar a estrela do" : "Marcar com estrela o"} lote ${l.lote_num ?? ""}">${l.estrela ? "★" : "☆"}</button>
       ${l.qtd_fotos ? `<span class="qtd-fotos num">${plural(l.qtd_fotos, "foto", "fotos")}</span>` : ""}</div>
     <div class="miolo">
       <div><h3>${esc(l.modelo || l.titulo)}</h3><div class="meta">${esc(metaLote(l))}</div></div>
@@ -1112,7 +1126,7 @@ function tabela() {
 function linhaTabela(l) {
   const c = conta(l), conf = confiancaDe(l), foto = urlSegura(l.foto);
   return `<tr class="m-${esc(l.marcacao)}" data-id="${l.id}" tabindex="0">
-    <td class="nlote">${l.lote_num ?? ""}</td>
+    <td class="nlote">${l.estrela ? `<span class="no-estrela" title="Com estrela">★</span> ` : ""}${l.lote_num ?? ""}</td>
     <td>${foto ? `<img loading="lazy" src="${esc(foto)}" alt="">` : `<span class="mini-vazia"></span>`}</td>
     <td class="veic"><b>${esc(l.modelo || l.titulo)}</b><div class="meta">${esc([marcaNome(l), ANO_CURTO(l), l.cor, semChave(l) ? "Sem chave" : ""].filter(Boolean).join(" · "))}</div></td>
     <td class="dir forte">${brl(l.valor_atual)}</td>
@@ -1175,6 +1189,7 @@ async function desenharFicha() {
       <div class="ficha-titulo"><h2>${esc(l.titulo)}</h2><div class="meta">${esc([ANO_CURTO(l), l.cor, combustivelNome(l.combustivel), l.conservacao].filter(Boolean).join(" · "))}</div></div>
       <div class="ficha-acoes">
         <span class="salvo" id="a-salvo" aria-live="polite"></span>
+        <button class="btn icone estrela-ficha" data-estrela aria-pressed="${!!l.estrela}" title="Estrela (tecla E)" aria-label="Estrela">${l.estrela ? "★" : "☆"}</button>
         <button class="btn icone" data-acao="ant" title="Lote anterior (seta para a esquerda)" aria-label="Lote anterior" ${posicao <= 0 ? "disabled" : ""}>←</button>
         <button class="btn icone" data-acao="prox" title="Próximo lote (seta para a direita)" aria-label="Próximo lote" ${posicao < 0 || posicao >= visiveis.length - 1 ? "disabled" : ""}>→</button>
         ${urlSegura(l.url) ? `<a class="btn" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">Abrir no site</a>` : ""}
@@ -1226,7 +1241,7 @@ async function desenharFicha() {
           </details>
           <div class="itens" id="serv-sel"></div>
         </section>
-        <div class="dica">Atalhos: ← → trocam de lote · 1 Quero · 2 Talvez · 3 Descartar · Esc fecha. Tudo salva sozinho.</div>
+        <div class="dica">Atalhos: ← → trocam de lote · 1 Quero · 2 Talvez · 3 Descartar · E estrela · Esc fecha. Tudo salva sozinho.</div>
       </div>
     </div>`;
   $("cobertura-ficha").hidden = false;
@@ -1456,8 +1471,20 @@ function marcar(id, marca) {
     atualizarMarcador(l);
   });
 }
+function alternarEstrela(id) {
+  const l = lotes.find(x => x.id === id);
+  if (!l) return;
+  l.estrela = !l.estrela;
+  salvarDepois(l, "estrela");
+  atualizarItem(l);
+  atualizarMarcador(l);
+}
 function atualizarMarcador(l) {
   if (aberto !== l.id) return;
+  document.querySelectorAll(".estrela-ficha").forEach(b => {
+    b.textContent = l.estrela ? "★" : "☆";
+    b.setAttribute("aria-pressed", !!l.estrela);
+  });
   document.querySelectorAll(".marcador [data-marca]").forEach(b => {
     const ligado = l.marcacao === b.dataset.marca;
     b.className = ligado ? "on-" + b.dataset.marca : "";
@@ -1504,6 +1531,12 @@ document.addEventListener("click", e => {
     const l = lotes.find(x => x.id === aberto);
     alternarServico(l, l.servicos[+tirar.dataset.servTirar].nome, false);
     desenharServicos(l);
+    return;
+  }
+  const est = e.target.closest("[data-estrela]");
+  if (est) {
+    const dono = est.closest("#lista [data-id]");
+    alternarEstrela(dono ? +dono.dataset.id : aberto);
     return;
   }
   const b = e.target.closest("[data-marca]");
@@ -1585,6 +1618,7 @@ document.addEventListener("keydown", e => {
   else if (e.key === "1") marcar(aberto, "interesse");
   else if (e.key === "2") marcar(aberto, "talvez");
   else if (e.key === "3") marcar(aberto, "descartado");
+  else if ((e.key === "e" || e.key === "E") && !e.ctrlKey && !e.metaKey && !e.altKey) alternarEstrela(aberto);
 });
 
 CAMPOS_TEXTO.forEach(id => $(id).addEventListener("input", () => {
