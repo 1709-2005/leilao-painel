@@ -468,7 +468,10 @@ table.conta { width: 100%; border-collapse: collapse; }
         <label class="campo">Venda pessimista (% da FIPE)<input id="p-venda" type="number" min="1" max="100"></label>
         <label class="campo">Comissão do leiloeiro (% do lance)<input id="p-comissao" type="number" min="0" max="100" step="0.5" placeholder="Ainda não informada"></label>
         <label class="campo">ICMS (% do lance)<input id="p-icms" type="number" min="0" max="100" step="0.1" placeholder="Ainda não informado"></label>
+        <label class="campo">IPVA (% da FIPE)<input id="p-ipva" type="number" min="0" max="100" step="0.1" placeholder="Ainda não informado"></label>
+        <label class="campo">Isento de IPVA com (anos de fabricação)<input id="p-ipva-isento" type="number" min="1" max="60" step="1" placeholder="Sem isenção"></label>
       </div>
+      <p class="dica">IPVA estimado pela alíquota do DF em cima da FIPE do carro (3% para automóvel). A isenção por idade fica desligada até alguém confirmar a regra: com "15", carro com 15 anos ou mais de fabricação em 2027 não paga.</p>
       <p class="dica">Pelo edital: comissão de 5%; ICMS de 0,6% para comprador do DF ou empresa de fora, e 0,9% para pessoa física de fora do DF.</p>
       <section class="grupo">
         <div><h3>Outros custos por carro</h3><p class="dica">Entram no lucro de referência. Ex.: taxas do edital, pátio, transferência.</p></div>
@@ -572,6 +575,7 @@ function dadosFaltando() {
   const faltam = [];
   if (ajustes.comissao_pct == null) faltam.push("a comissão");
   if (ajustes.icms_pct == null) faltam.push("o ICMS");
+  if (ajustes.ipva_pct == null) faltam.push("o IPVA");
   const custos = ajustes.custos_fixos || [];
   if (!custos.length) faltam.push("os outros custos");
   custos.filter(i => i.valor == null).forEach(i => faltam.push(i.nome.toLowerCase()));
@@ -584,11 +588,15 @@ function conta(l) {
   const icms = lance * (ajustes.icms_pct || 0) / 100;
   const fixos = somaCustos(ajustes.custos_fixos);
   const servicos = somaCustos(l.servicos);
-  if (fipe == null) return { fipe, lance, comissao, icms, fixos, servicos, venda: null, lucro: null, empate: null };
+  if (fipe == null) return { fipe, lance, comissao, icms, fixos, servicos, ipva: 0, ipvaIsento: false, venda: null, lucro: null, empate: null };
+  const ipvaIsento = ipvaIsentoDe(l), ipva = ipvaIsento ? 0 : fipe * (ajustes.ipva_pct || 0) / 100;
   const venda = fipe * ajustes.pct_venda / 100;
-  return { fipe, lance, comissao, icms, fixos, servicos, venda, lucro: venda - lance - comissao - icms - fixos - servicos,
-    empate: (venda - fixos - servicos) / (1 + ((ajustes.comissao_pct || 0) + (ajustes.icms_pct || 0)) / 100) };
+  return { fipe, lance, comissao, icms, fixos, servicos, ipva, ipvaIsento, venda, lucro: venda - lance - comissao - icms - fixos - servicos - ipva,
+    empate: (venda - fixos - servicos - ipva) / (1 + ((ajustes.comissao_pct || 0) + (ajustes.icms_pct || 0)) / 100) };
 }
+/* IPVA de 2027: idade pelo ano de fabricação. Só isenta se a premissa de isenção estiver preenchida. */
+const ANO_IPVA = 2027;
+const ipvaIsentoDe = l => ajustes.ipva_isento_anos != null && l.ano_fab != null && ANO_IPVA - l.ano_fab >= ajustes.ipva_isento_anos;
 const confiancaDe = l => l.valor_ref != null ? "manual" : (l.fipe_valor == null ? (l.fipe_confianca ? "nao_achei" : "") : l.fipe_confianca);
 const TEXTO_CONFIANCA = { alta: "Versão provável", media: "Versão aproximada", baixa: "Revisar versão", manual: "Escolhida por você", nao_achei: "Não encontrada" };
 const passouMax = l => l.lance_max != null && l.valor_atual > l.lance_max;
@@ -750,8 +758,8 @@ const apiNuvem = {
   async salvarAjustes(novos) {
     const limpa = lista => (lista || []).filter(i => String(i.nome || "").trim()).map(i => ({ nome: String(i.nome).trim(), valor: i.valor === "" || i.valor == null ? null : +i.valor }));
     const pct = v => v === "" || v == null ? null : +v;
-    const valor = { pct_venda: +novos.pct_venda, comissao_pct: pct(novos.comissao_pct), icms_pct: pct(novos.icms_pct), custos_fixos: limpa(novos.custos_fixos), servicos: limpa(novos.servicos) };
-    if (!(valor.pct_venda > 0 && valor.pct_venda <= 100) || [valor.comissao_pct, valor.icms_pct].some(p => p != null && (p < 0 || p > 100))) throw new Error("Os percentuais precisam ficar entre 0 e 100.");
+    const valor = { pct_venda: +novos.pct_venda, comissao_pct: pct(novos.comissao_pct), icms_pct: pct(novos.icms_pct), ipva_pct: pct(novos.ipva_pct), ipva_isento_anos: pct(novos.ipva_isento_anos), custos_fixos: limpa(novos.custos_fixos), servicos: limpa(novos.servicos) };
+    if (!(valor.pct_venda > 0 && valor.pct_venda <= 100) || [valor.comissao_pct, valor.icms_pct, valor.ipva_pct].some(p => p != null && (p < 0 || p > 100))) throw new Error("Os percentuais precisam ficar entre 0 e 100.");
     await gravarArquivo("premissas.json", () => valor, `Premissas alteradas (${eu})`, v => JSON.stringify(v, null, 1) + "\n");
     return valor;
   },
@@ -1073,7 +1081,7 @@ function alertasDe(l) {
   return a;
 }
 function margemHtml(l, c) {
-  const custo = c.lance + c.comissao + c.icms + c.fixos + c.servicos;
+  const custo = c.lance + c.comissao + c.icms + c.fixos + c.servicos + c.ipva;
   const pct = Math.min(100, Math.max(0, custo / c.venda * 100));
   // Com máximo definido, a barra vai até ele e a marca mostra onde o lance está agora.
   const atual = l.lance_max != null ? Math.min(100, lanceMin(l) / c.venda * 100) : null;
@@ -1277,6 +1285,7 @@ function htmlConta(l, d) {
     <tr><td>− ${l.lance_max != null ? "Meu lance máximo" : "Lance mínimo agora"}</td><td>${brl(c.lance)}</td></tr>
     <tr><td>− Comissão${semComissao ? "" : ` (${pctTexto(ajustes.comissao_pct)})`}</td><td>${semComissao ? falta("não informada") : brl(c.comissao)}</td></tr>
     <tr><td>− ICMS${semIcms ? "" : ` (${pctTexto(ajustes.icms_pct)})`}</td><td>${semIcms ? falta("não informado") : brl(c.icms)}</td></tr>
+    <tr><td>− IPVA${ajustes.ipva_pct == null ? "" : c.ipvaIsento ? " (isento pela idade)" : ` (${pctTexto(ajustes.ipva_pct)} da FIPE)`}</td><td>${ajustes.ipva_pct == null ? falta("não informado") : brl(c.ipva)}</td></tr>
     ${custos.length ? custos.map(i => `<tr><td>− ${esc(i.nome)}</td><td>${i.valor == null ? falta("não informado") : brl(i.valor)}</td></tr>`).join("") : `<tr><td>− Outros custos</td><td>${falta("não informados")}</td></tr>`}
     ${l.servicos.length ? l.servicos.map(s => `<tr><td>− ${esc(s.nome)}</td><td>${s.valor == null ? falta("sem valor") : brl(s.valor)}</td></tr>`).join("") : `<tr><td>− Serviços no carro</td><td>${brl(0)}</td></tr>`}
     <tr class="total ${c.lucro >= 0 ? "pos" : "neg"}"><td>Lucro de referência</td><td>${brl(c.lucro)}</td></tr>
@@ -1407,6 +1416,8 @@ function abrirPremissas() {
   $("p-venda").value = rascunho.pct_venda;
   $("p-comissao").value = rascunho.comissao_pct ?? "";
   $("p-icms").value = rascunho.icms_pct ?? "";
+  $("p-ipva").value = rascunho.ipva_pct ?? "";
+  $("p-ipva-isento").value = rascunho.ipva_isento_anos ?? "";
   $("p-msg").textContent = "";
   desenharPremissas();
   $("premissas").hidden = false;
@@ -1647,7 +1658,7 @@ $("btn-premissas").onclick = abrirPremissas;
 $("p-cancelar").onclick = fecharPremissas;
 $("p-salvar").onclick = async () => {
   try {
-    await salvarAjustes({ ...rascunho, pct_venda: $("p-venda").value, comissao_pct: $("p-comissao").value, icms_pct: $("p-icms").value });
+    await salvarAjustes({ ...rascunho, pct_venda: $("p-venda").value, comissao_pct: $("p-comissao").value, icms_pct: $("p-icms").value, ipva_pct: $("p-ipva").value, ipva_isento_anos: $("p-ipva-isento").value });
     fecharPremissas();
     desenhar();
     desenharAvisos();
