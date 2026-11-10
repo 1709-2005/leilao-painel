@@ -187,6 +187,9 @@ input::placeholder, textarea::placeholder { color: var(--suave); opacity: .85; }
 .margem i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--suave); }
 .margem.neg i { background: var(--ruim); }
 .margem u { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--texto); }
+.proj-min { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 4px 8px; background: var(--superficie-2); border-radius: 4px; font-size: 12.5px; color: var(--suave); }
+.proj-min b { font: 700 15px/1.2 var(--fonte-numero); white-space: nowrap; }
+.proj-min b.pos { color: var(--bom); } .proj-min b.neg { color: var(--ruim); }
 .legenda { display: flex; justify-content: space-between; gap: 8px; font: 500 12.5px/1.2 var(--fonte-numero); color: var(--suave); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .legenda b { color: var(--texto); font-weight: 600; }
 .sem-fipe { font-size: 12.5px; color: var(--suave); }
@@ -582,8 +585,9 @@ function dadosFaltando() {
   return faltam;
 }
 const contaFaltaDados = () => dadosFaltando().length > 0;
-function conta(l) {
-  const fipe = fipeDe(l), lance = l.lance_max ?? lanceMin(l);
+/* lanceForcado: refaz a conta com outro lance (ex.: o próximo lance mínimo) em vez do meu máximo. */
+function conta(l, lanceForcado) {
+  const fipe = fipeDe(l), lance = lanceForcado ?? l.lance_max ?? lanceMin(l);
   const comissao = lance * (ajustes.comissao_pct || 0) / 100;
   const icms = lance * (ajustes.icms_pct || 0) / 100;
   const fixos = somaCustos(ajustes.custos_fixos);
@@ -1089,7 +1093,7 @@ function margemHtml(l, c) {
     <i style="width:${pct.toFixed(1)}%"></i>${atual != null ? `<u style="left:${atual.toFixed(1)}%" title="Lance mínimo agora: ${brl(lanceMin(l))}"></u>` : ""}</div>`;
 }
 function cartao(l) {
-  const foto = urlSegura(l.foto), c = conta(l), conf = confiancaDe(l);
+  const foto = urlSegura(l.foto), c = conta(l), cMin = conta(l, lanceMin(l)), conf = confiancaDe(l);
   const etiquetas = [];
   if (semChave(l)) etiquetas.push(`<span class="etiqueta atencao">Sem chave</span>`);
   if (conf === "baixa") etiquetas.push(`<span class="etiqueta atencao">Revisar FIPE</span>`);
@@ -1102,8 +1106,9 @@ function cartao(l) {
        <div class="sem-fipe">${conf === "nao_achei" ? "FIPE não encontrada. Abra para escolher a versão." : "FIPE ainda não consultada."}</div>`
     : `<div class="numeros">
          <div><span class="rotulo">Lance atual</span><span class="valor">${brl(l.valor_atual)}</span><span class="nota-sub">${plural(l.lances, "lance", "lances")}</span></div>
-         <div><span class="rotulo">Lucro de referência</span><span class="valor ${c.lucro >= 0 ? "pos" : "neg"}">${brl(c.lucro)}</span><span class="nota-sub">${l.lance_max != null ? `no meu máximo de ${brl(l.lance_max)}` : `lance em ${Math.round(l.valor_atual / c.fipe * 100)}% da FIPE`}</span></div>
+         <div><span class="rotulo">Lucro de referência</span><span class="valor ${c.lucro >= 0 ? "pos" : "neg"}">${brl(c.lucro)}</span><span class="nota-sub">${l.lance_max != null ? `no meu máximo de ${brl(l.lance_max)}` : `no lance mínimo de ${brl(lanceMin(l))}`}</span></div>
        </div>
+       ${l.lance_max != null ? `<div class="proj-min num"><span>Se arrematar no próximo lance mínimo (${brl(lanceMin(l))})</span><b class="${cMin.lucro >= 0 ? "pos" : "neg"}">${brl(cMin.lucro)}</b></div>` : ""}
        ${margemHtml(l, c)}
        <div class="legenda"><span title="${esc(TEXTO_CONFIANCA[conf] || "")}">FIPE <b>${conf === "alta" || conf === "manual" ? "" : "≈ "}${brl(c.fipe)}</b></span><span>Venda ${ajustes.pct_venda}% <b>${brl(c.venda)}</b></span></div>`;
   return `<article class="cartao m-${esc(l.marcacao)}" data-id="${l.id}" tabindex="0" aria-label="Lote ${l.lote_num ?? ""}, ${esc(l.titulo)}">
@@ -1128,11 +1133,11 @@ function tabela() {
   const th = (t, o, c = "") => `<th class="${c}">${o ? `<button data-ordem="${o}" aria-pressed="${estado.ordem === o}">${t}${estado.ordem === o ? " ▾" : ""}</button>` : t}</th>`;
   return `<div class="tabela-caixa"><table class="lotes"><thead><tr>
     ${th("Lote", "lote")}<th><span hidden>Foto</span></th>${th("Veículo")}
-    ${th("Lance atual", "valor", "dir")}${th("Lances", "lances-d", "dir")}${th("FIPE", "", "dir")}${th(`Venda ${ajustes.pct_venda}%`, "", "dir")}${th("Lucro de ref.", "lucro-d", "dir")}${th("% da FIPE", "pctfipe", "dir")}${th("Serviços", "", "dir")}${th("Meu máx.", "", "dir")}${th("Marcação")}${th("Notas")}
+    ${th("Lance atual", "valor", "dir")}${th("Lances", "lances-d", "dir")}${th("FIPE", "", "dir")}${th(`Venda ${ajustes.pct_venda}%`, "", "dir")}${th("Lucro de ref.", "lucro-d", "dir")}${th("Lucro no lance mín.", "", "dir")}${th("% da FIPE", "pctfipe", "dir")}${th("Serviços", "", "dir")}${th("Meu máx.", "", "dir")}${th("Marcação")}${th("Notas")}
   </tr></thead><tbody>${visiveis.map(linhaTabela).join("")}</tbody></table></div>`;
 }
 function linhaTabela(l) {
-  const c = conta(l), conf = confiancaDe(l), foto = urlSegura(l.foto);
+  const c = conta(l), cMin = conta(l, lanceMin(l)), conf = confiancaDe(l), foto = urlSegura(l.foto);
   return `<tr class="m-${esc(l.marcacao)}" data-id="${l.id}" tabindex="0">
     <td class="nlote">${l.estrela ? `<span class="no-estrela" title="Com estrela">★</span> ` : ""}${l.lote_num ?? ""}</td>
     <td>${foto ? `<img loading="lazy" src="${esc(foto)}" alt="">` : `<span class="mini-vazia"></span>`}</td>
@@ -1142,6 +1147,7 @@ function linhaTabela(l) {
     <td class="dir num" title="${esc(TEXTO_CONFIANCA[conf] || "")}">${c.fipe == null ? "-" : `${conf === "alta" || conf === "manual" ? "" : `<span class="aprox">≈</span> `}${brl(c.fipe)}`}</td>
     <td class="dir num">${brl(c.venda)}</td>
     <td class="dir forte ${c.lucro == null ? "" : c.lucro >= 0 ? "pos" : "neg"}">${brl(c.lucro)}</td>
+    <td class="dir num ${cMin.lucro == null ? "" : cMin.lucro >= 0 ? "pos" : "neg"}">${brl(cMin.lucro)}</td>
     <td class="dir num">${c.fipe ? Math.round(l.valor_atual / c.fipe * 100) + "%" : "-"}</td>
     <td class="dir num">${l.servicos && l.servicos.length ? `${l.servicos.length}${somaCustos(l.servicos) ? ` · ${brl(somaCustos(l.servicos))}` : ""}` : "-"}</td>
     <td class="dir num">${l.lance_max != null ? `<span class="${passouMax(l) ? "neg" : ""}">${brl(l.lance_max)}</span>` : "-"}</td>
@@ -1290,6 +1296,7 @@ function htmlConta(l, d) {
     ${l.servicos.length ? l.servicos.map(s => `<tr><td>− ${esc(s.nome)}</td><td>${s.valor == null ? falta("sem valor") : brl(s.valor)}</td></tr>`).join("") : `<tr><td>− Serviços no carro</td><td>${brl(0)}</td></tr>`}
     <tr class="total ${c.lucro >= 0 ? "pos" : "neg"}"><td>Lucro de referência</td><td>${brl(c.lucro)}</td></tr>
   </table>
+  ${l.lance_max != null ? `<div class="dica num">No próximo lance mínimo (${brl(lanceMin(l))}) o lucro seria <b>${brl(conta(l, lanceMin(l)).lucro)}</b>.</div>` : ""}
   <div class="dica num">Já com os serviços previstos. A conta zera num lance de ${brl(c.empate)}.
     ${contaFaltaDados() ? `<button class="link" data-abrir-premissas>Preencher o que falta</button>` : ""}</div>`;
 }
