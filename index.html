@@ -244,11 +244,18 @@ button.tile[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--ruim); }
 .valor { display: block; font: 800 semi-condensed 24px/1.15 var(--fonte); font-variant-numeric: tabular-nums; letter-spacing: -.01em; white-space: nowrap; }
 .valor.pos { color: var(--bom); } .valor.neg { color: var(--ruim); }
 .nota-sub { font-size: 12px; color: var(--suave); white-space: nowrap; }
-.margem { position: relative; height: 6px; border-radius: 999px; background: var(--bom-forte); }
-.margem i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px 0 0 999px; background: var(--linha-forte); box-shadow: 1px 0 0 var(--superficie-2); }
-.margem.neg { background: var(--ruim-fundo); }
-.margem.neg i { background: var(--ruim); border-radius: 999px; box-shadow: none; }
-.margem u { position: absolute; top: -3px; bottom: -3px; width: 3px; margin-left: -1px; border-radius: 2px; background: var(--texto); box-shadow: 0 0 0 1.5px var(--superficie-2); }
+/* régua do lance: de zero até o lance em que o lucro zera */
+.regua { display: grid; gap: 6px; }
+.margem { position: relative; height: 8px; border-radius: 999px; background: var(--bom-forte); }
+.margem i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px 0 0 999px; background: var(--suave); box-shadow: 2px 0 0 var(--superficie-2); }
+.margem s { position: absolute; top: 0; bottom: 0; background: var(--ruim); box-shadow: 2px 0 0 var(--superficie-2); }
+.margem u { position: absolute; top: -4px; bottom: -4px; width: 3px; margin-left: -1.5px; border-radius: 2px; background: var(--texto); box-shadow: 0 0 0 1.5px var(--superficie-2); }
+.margem.estourou { background: var(--ruim); }
+.regua-leg { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; font-size: 11px; line-height: 1.3; color: var(--suave); white-space: nowrap; }
+.regua-leg b { color: var(--texto); font-weight: 700; }
+.regua-leg .neg { color: var(--ruim); font-weight: 600; white-space: normal; }
+.regua-leg .q { display: inline-block; width: 8px; height: 8px; margin-right: 4px; border-radius: 2px; background: var(--suave); }
+.regua-leg .q.max { width: 3px; height: 11px; margin-left: 9px; background: var(--texto); vertical-align: -2px; }
 .proj-min { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding-top: 8px; border-top: 1px dashed var(--linha-forte);
   font-size: 12.5px; color: var(--suave); }
 .proj-min b { font: 800 semi-condensed 15px/1.2 var(--fonte); white-space: nowrap; }
@@ -1259,13 +1266,23 @@ function alertasDe(l) {
   if (mudou24h(l) && l.valor_anterior != null && l.valor_atual !== l.valor_anterior) a.push(["atencao", `Era ${brl(l.valor_anterior)}, mudou ${haQuanto(l.valor_mudou_em)}`]);
   return a;
 }
+/* Régua do lance: vai de zero até o lance em que o lucro zera (já com taxas, custos e serviços).
+   Cinza = onde o lance está agora; verde = o quanto ele ainda pode subir com lucro;
+   risco = meu máximo; vermelho = o trecho em que o lance já passou do meu máximo. */
 function margemHtml(l, c) {
-  const custo = c.lance + c.comissao + c.icms + c.fixos + c.servicos + c.ipva;
-  const pct = Math.min(100, Math.max(0, custo / c.venda * 100));
-  // Com máximo definido, a barra vai até ele e a marca mostra onde o lance está agora.
-  const atual = l.lance_max != null ? Math.min(100, lanceMin(l) / c.venda * 100) : null;
-  return `<div class="margem ${c.lucro < 0 ? "neg" : ""}" role="img" aria-label="O custo ${l.lance_max != null ? "no meu máximo" : "agora"} usa ${Math.round(custo / c.venda * 100)}% da venda pessimista">
-    <i style="width:${pct.toFixed(1)}%"></i>${atual != null ? `<u style="left:${atual.toFixed(1)}%" title="Lance mínimo agora: ${brl(lanceMin(l))}"></u>` : ""}</div>`;
+  const agora = lanceMin(l), zera = c.empate, max = l.lance_max;
+  if (!(zera > 0) || agora >= zera) {
+    const texto = zera > 0 ? `O lance já passou de ${brl(zera)}, onde o lucro zera` : "Não sobra lucro em lance nenhum";
+    return `<div class="regua"><div class="margem estourou" role="img" aria-label="${texto}"></div><div class="regua-leg"><span class="neg">${texto}</span></div></div>`;
+  }
+  const pct = v => Math.min(100, Math.max(0, v / zera * 100));
+  const passou = max != null && agora > max;
+  return `<div class="regua">
+    <div class="margem" role="img" title="Lance mínimo agora: ${brl(agora)}" aria-label="Lance mínimo agora ${brl(agora)}${max != null ? `, meu máximo ${brl(max)}` : ""}; o lucro zera num lance de ${brl(zera)}">
+      <i style="width:${pct(passou ? max : agora).toFixed(1)}%"></i>${passou ? `<s title="Quanto o lance já passou do meu máximo: ${brl(agora - max)}" style="left:${pct(max).toFixed(1)}%;width:${(pct(agora) - pct(max)).toFixed(1)}%"></s>` : ""}${max != null ? `<u style="left:${pct(max).toFixed(1)}%" title="Meu máximo: ${brl(max)}"></u>` : ""}
+    </div>
+    <div class="regua-leg"><span><i class="q"></i>lance agora${max != null ? `<i class="q max"></i>meu máx.` : ""}</span><span>lucro zera em <b>${brl(zera)}</b></span></div>
+  </div>`;
 }
 function cartao(l) {
   const foto = urlSegura(l.foto), c = conta(l), cMin = conta(l, lanceMin(l)), conf = confiancaDe(l);
