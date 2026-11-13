@@ -6,40 +6,53 @@
 <title>Leilão Detran-DF</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..110,400..800&display=swap">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141b24" media="(prefers-color-scheme: dark)">
 <style>
-/* Conceito: catálogo de pátio. O número do lote é uma placa Mercosul, e cada carro
-   responde em um olhar quanto custa agora e quanto sobra na venda pessimista. */
+/* Conceito: mesa de decisão do leilão. A interface é neutra, em tinta; a cor fica para o que decide:
+   verde é lucro, âmbar é atenção, vermelho é prejuízo. O número do lote continua sendo uma placa Mercosul. */
 :root {
-  --fundo: #edf0f4; --superficie: #ffffff; --superficie-2: #f3f5f8; --linha: #d7dde5; --linha-forte: #b4bdc9;
-  --texto: #17212d; --suave: #5a6777; --acento: #0b4fb3; --acento-fundo: #e2ecfa;
-  --bom: #0a7349; --bom-fundo: #dcf3e8; --atencao: #8f5b00; --atencao-fundo: #fbeed3;
-  --ruim: #b3261e; --ruim-fundo: #fae3e0; --cobertura: rgba(15, 24, 35, .58);
+  --fundo: #f2f4f7; --superficie: #ffffff; --superficie-2: #f0f2f6; --linha: #e3e6ec; --linha-forte: #c6ccd6;
+  --texto: #101623; --suave: #5c6778; --tinta: #101623; --tinta-texto: #ffffff;
+  --acento: #1f52d6; --acento-fundo: #e5ecff;
+  --bom: #0a7a4a; --bom-fundo: #dcf5e8; --bom-forte: #0f9d5f;
+  --atencao: #8f5600; --atencao-fundo: #fdefd0; --ambar: #e3a008;
+  --ruim: #c2281f; --ruim-fundo: #fde6e3; --ouro: #f5b301;
+  --cobertura: rgba(12, 18, 28, .55);
   --placa-azul: #0d3f9e; --placa-branco: #ffffff; --placa-texto: #101820;
-  --sombra: 0 1px 2px rgba(23, 33, 45, .07); --sombra-alta: 0 18px 50px rgba(15, 24, 35, .28);
-  --fonte: "Barlow", "Segoe UI", system-ui, sans-serif;
-  --fonte-numero: "Barlow Semi Condensed", "Segoe UI", system-ui, sans-serif;
+  --sombra: 0 1px 2px rgba(16, 22, 35, .06), 0 1px 1px rgba(16, 22, 35, .04);
+  --sombra-media: 0 10px 28px rgba(16, 22, 35, .12);
+  --sombra-alta: 0 24px 60px rgba(12, 18, 28, .32);
+  --raio: 14px; --raio-p: 10px; --topo-altura: 64px;
+  --fonte: "Archivo", "Segoe UI", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --fundo: #10161d; --superficie: #19222c; --superficie-2: #212c38; --linha: #2c3846; --linha-forte: #475566;
-    --texto: #e9eef4; --suave: #98a6b6; --acento: #79aeff; --acento-fundo: #1b3050;
-    --bom: #4fd19b; --bom-fundo: #15352a; --atencao: #eebb62; --atencao-fundo: #3a2d14;
-    --ruim: #f58b82; --ruim-fundo: #41211e; --cobertura: rgba(4, 8, 12, .7);
-    --sombra: none; --sombra-alta: 0 18px 50px rgba(0, 0, 0, .55); color-scheme: dark;
+    --fundo: #0b0f15; --superficie: #141b24; --superficie-2: #1c2531; --linha: #243040; --linha-forte: #3b4859;
+    --texto: #eef2f6; --suave: #94a2b3; --tinta: #eef2f6; --tinta-texto: #0b0f15;
+    --acento: #8ab4ff; --acento-fundo: #18294a;
+    --bom: #3ddc97; --bom-fundo: #0f3023; --bom-forte: #2bc483;
+    --atencao: #f2bd5b; --atencao-fundo: #3a2c10; --ambar: #f2bd5b;
+    --ruim: #ff8a80; --ruim-fundo: #401d1a;
+    --cobertura: rgba(3, 6, 10, .72);
+    --sombra: none; --sombra-media: 0 10px 28px rgba(0, 0, 0, .45); --sombra-alta: 0 24px 60px rgba(0, 0, 0, .6); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --fundo: #10161d; --superficie: #19222c; --superficie-2: #212c38; --linha: #2c3846; --linha-forte: #475566;
-  --texto: #e9eef4; --suave: #98a6b6; --acento: #79aeff; --acento-fundo: #1b3050;
-  --bom: #4fd19b; --bom-fundo: #15352a; --atencao: #eebb62; --atencao-fundo: #3a2d14;
-  --ruim: #f58b82; --ruim-fundo: #41211e; --cobertura: rgba(4, 8, 12, .7);
-  --sombra: none; --sombra-alta: 0 18px 50px rgba(0, 0, 0, .55); color-scheme: dark;
+  --fundo: #0b0f15; --superficie: #141b24; --superficie-2: #1c2531; --linha: #243040; --linha-forte: #3b4859;
+  --texto: #eef2f6; --suave: #94a2b3; --tinta: #eef2f6; --tinta-texto: #0b0f15;
+  --acento: #8ab4ff; --acento-fundo: #18294a;
+  --bom: #3ddc97; --bom-fundo: #0f3023; --bom-forte: #2bc483;
+  --atencao: #f2bd5b; --atencao-fundo: #3a2c10; --ambar: #f2bd5b;
+  --ruim: #ff8a80; --ruim-fundo: #401d1a;
+  --cobertura: rgba(3, 6, 10, .72);
+  --sombra: none; --sombra-media: 0 10px 28px rgba(0, 0, 0, .45); --sombra-alta: 0 24px 60px rgba(0, 0, 0, .6); color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--fundo); color: var(--texto); font: 400 14px/1.45 var(--fonte); }
+body { margin: 0; background: var(--fundo); color: var(--texto); font: 400 14px/1.45 var(--fonte); -webkit-font-smoothing: antialiased; }
 body.travado { overflow: hidden; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
@@ -48,363 +61,450 @@ h1, h2, h3, p { margin: 0; }
 [hidden] { display: none !important; }
 :focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
 input, select, textarea {
-  width: 100%; min-height: 36px; padding: 6px 10px; background: var(--superficie);
-  border: 1px solid var(--linha-forte); border-radius: 6px;
+  width: 100%; min-height: 40px; padding: 8px 12px; background: var(--superficie);
+  border: 1px solid var(--linha-forte); border-radius: var(--raio-p); transition: border-color .15s, box-shadow .15s;
 }
-input::placeholder, textarea::placeholder { color: var(--suave); opacity: .85; }
+input:hover, select:hover, textarea:hover { border-color: var(--suave); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-fundo); }
+input::placeholder, textarea::placeholder { color: var(--suave); opacity: .8; }
 .num { font-variant-numeric: tabular-nums; }
-.rotulo { display: block; font-size: 12px; font-weight: 500; color: var(--suave); }
-.campo { display: grid; gap: 4px; font-size: 12px; font-weight: 500; color: var(--suave); }
+.ico { width: 18px; height: 18px; flex: none; }
+.so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.rotulo { display: block; font-size: 11.5px; font-weight: 600; color: var(--suave); }
+.campo { display: grid; gap: 5px; font-size: 12px; font-weight: 600; color: var(--suave); }
 .campo > input, .campo > select, .campo > textarea, .campo > .dupla { color: var(--texto); font-size: 14px; font-weight: 400; }
 .dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.trio { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px 12px; }
+.trio { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px 12px; }
 
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 6px 12px;
-  background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: 6px; font-weight: 500;
-  text-decoration: none; color: var(--texto); white-space: nowrap; }
-.btn:hover:not(:disabled) { background: var(--superficie-2); }
-.btn:disabled { opacity: .6; cursor: default; }
-.btn.primario { background: var(--acento); border-color: var(--acento); color: var(--superficie); font-weight: 600; }
-.btn.primario:hover:not(:disabled) { background: var(--acento); filter: brightness(1.1); }
-.btn.icone { width: 36px; padding: 0; font-size: 16px; }
-.btn.discreto { background: none; border-color: transparent; color: var(--acento); }
-.btn.discreto:hover:not(:disabled) { background: var(--acento-fundo); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 8px 14px;
+  background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: var(--raio-p); font-size: 13.5px; font-weight: 600;
+  text-decoration: none; color: var(--texto); white-space: nowrap; transition: background .15s, border-color .15s, color .15s; }
+.btn:hover:not(:disabled) { background: var(--superficie-2); border-color: var(--suave); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.primario { background: var(--tinta); border-color: var(--tinta); color: var(--tinta-texto); }
+.btn.primario:hover:not(:disabled) { background: var(--tinta); border-color: var(--tinta); opacity: .86; }
+.btn.icone { width: 40px; padding: 0; }
+.btn.discreto { background: none; border-color: transparent; color: var(--suave); }
+.btn.discreto:hover:not(:disabled) { background: var(--superficie-2); border-color: transparent; color: var(--texto); }
+.btn.pequeno { min-height: 34px; padding: 4px 10px; font-size: 13px; }
+.btn.pequeno.icone { width: 34px; padding: 0; }
 
 /* placa Mercosul do lote */
-.placa { display: inline-grid; min-width: 52px; text-align: center; background: var(--placa-branco); color: var(--placa-texto);
-  border: 1px solid rgba(16, 24, 32, .45); border-radius: 4px; overflow: hidden; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
-.placa small { background: var(--placa-azul); color: var(--placa-branco); font: 600 8.5px/1 var(--fonte); letter-spacing: .12em; padding: 2px 6px; }
-.placa b { font: 700 18px/1 var(--fonte-numero); padding: 3px 7px 3px; font-variant-numeric: tabular-nums; }
-.placa.grande { min-width: 68px; }
-.placa.grande small { font-size: 9.5px; padding: 3px 8px; }
-.placa.grande b { font-size: 26px; }
+.placa { display: inline-grid; min-width: 50px; text-align: center; background: var(--placa-branco); color: var(--placa-texto);
+  border-radius: 6px; overflow: hidden; line-height: 1; box-shadow: 0 0 0 1px rgba(16, 24, 32, .4), 0 2px 6px rgba(0, 0, 0, .28); }
+.placa small { background: var(--placa-azul); color: var(--placa-branco); font: 700 8px/1 var(--fonte); letter-spacing: .14em; padding: 3px 6px 2px; }
+.placa b { font: 800 semi-condensed 18px/1 var(--fonte); padding: 3px 7px 4px; font-variant-numeric: tabular-nums; }
+.placa.grande { min-width: 66px; }
+.placa.grande small { font-size: 9px; padding: 4px 8px 3px; }
+.placa.grande b { font-size: 26px; padding: 4px 8px 5px; }
 
 /* topo */
-.topo { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;
-  padding: 10px 20px; background: var(--superficie); border-bottom: 1px solid var(--linha); }
-.topo h1 { font: 700 22px/1.1 var(--fonte-numero); letter-spacing: .005em; }
-.topo .sub { color: var(--suave); font-size: 13px; }
-.topo-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto; }
-.status { display: inline-flex; align-items: center; gap: 7px; color: var(--suave); font-size: 13px; margin-right: 4px; }
-.status i { width: 8px; height: 8px; border-radius: 50%; background: var(--bom); }
-.status.atencao i { background: var(--atencao); } .status.ruim i { background: var(--ruim); }
-.status.ativo i { background: var(--acento); animation: pulso 1.2s ease-in-out infinite; }
+.topo { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 8px 12px; min-height: var(--topo-altura);
+  padding: 8px 24px; background: var(--superficie); border-bottom: 1px solid var(--linha); }
+@supports (backdrop-filter: blur(1px)) {
+  .topo { background: color-mix(in srgb, var(--superficie) 86%, transparent); backdrop-filter: saturate(1.4) blur(14px); }
+}
+.marca-ico { display: grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 11px; background: var(--tinta); color: var(--tinta-texto); }
+.marca-ico .ico { width: 20px; height: 20px; }
+.topo-titulo { min-width: 0; }
+.topo h1 { font: 800 semi-condensed 21px/1.1 var(--fonte); letter-spacing: -.005em; }
+.topo .sub { color: var(--suave); font-size: 12.5px; margin-top: 2px; }
+.topo-acoes { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; margin-right: 6px; border-radius: 999px; background: var(--superficie-2);
+  color: var(--suave); font-size: 12.5px; font-weight: 500; white-space: nowrap; }
+.status i { width: 8px; height: 8px; border-radius: 50%; background: var(--bom-forte); box-shadow: 0 0 0 3px var(--bom-fundo); }
+.status.atencao i { background: var(--ambar); box-shadow: 0 0 0 3px var(--atencao-fundo); }
+.status.ruim i { background: var(--ruim); box-shadow: 0 0 0 3px var(--ruim-fundo); }
+.status.ativo i { background: var(--acento); box-shadow: 0 0 0 3px var(--acento-fundo); animation: pulso 1.2s ease-in-out infinite; }
 @keyframes pulso { 50% { opacity: .35; } }
 
 .avisos { display: grid; gap: 0; }
-.aviso { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; padding: 8px 20px; font-size: 13.5px;
+.aviso { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; padding: 9px 24px; font-size: 13.5px; font-weight: 500;
   background: var(--atencao-fundo); color: var(--atencao); border-bottom: 1px solid var(--linha); }
 .aviso.erro { background: var(--ruim-fundo); color: var(--ruim); }
 .aviso .btn { min-height: 28px; padding: 2px 10px; background: transparent; border-color: currentColor; color: inherit; }
 
 /* estrutura */
-.corpo { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
-.corpo.com-filtros { grid-template-columns: 264px minmax(0, 1fr); }
+.corpo { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; max-width: 1800px; margin: 0 auto; }
+.corpo.com-filtros { grid-template-columns: 288px minmax(0, 1fr); }
 .corpo:not(.com-filtros) .filtros { display: none; }
-.filtros { position: sticky; top: 61px; max-height: calc(100vh - 61px); overflow-y: auto; padding: 16px 16px 24px 20px;
-  display: grid; gap: 18px; scrollbar-width: thin; }
+.filtros { position: sticky; top: var(--topo-altura); max-height: calc(100vh - var(--topo-altura)); overflow-y: auto; padding: 20px 6px 28px 24px;
+  display: grid; gap: 12px; align-content: start; scrollbar-width: thin; }
+.filtros-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.filtros-topo h2 { font: 800 semi-condensed 18px/1.1 var(--fonte); }
 .filtros-rodape { display: none; }
 .grupo { display: grid; gap: 10px; }
-.grupo > h2 { font: 600 11.5px/1 var(--fonte); text-transform: uppercase; letter-spacing: .08em; color: var(--suave); }
-.check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer; }
-.check input { width: 16px; height: 16px; min-height: 0; margin: 0; accent-color: var(--acento); }
-.conteudo { min-width: 0; padding: 16px 20px 48px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-content: start; }
-.corpo.com-filtros .conteudo { padding-left: 8px; }
+.filtros .grupo { padding: 14px; background: var(--superficie); border: 1px solid var(--linha); border-radius: var(--raio); box-shadow: var(--sombra); }
+.grupo > h2 { font: 700 11px/1 var(--fonte); text-transform: uppercase; letter-spacing: .09em; color: var(--suave); }
+.check { display: flex; align-items: center; gap: 9px; font-size: 13.5px; cursor: pointer; }
+.check input { width: 17px; height: 17px; min-height: 0; margin: 0; padding: 0; accent-color: var(--tinta); }
+.conteudo { min-width: 0; padding: 20px 24px 56px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-content: start; }
+.corpo.com-filtros .conteudo { padding-left: 14px; }
 
 /* minha lista */
-.minha-lista { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; padding: 10px 14px; background: var(--superficie);
-  border: 1px solid var(--linha); border-radius: 8px; }
-.minha-lista h2 { font: 700 15px/1 var(--fonte-numero); }
-.minha-lista div b { display: block; font: 700 18px/1.15 var(--fonte-numero); font-variant-numeric: tabular-nums; }
-.minha-lista div span { color: var(--suave); font-size: 12px; }
+.minha-lista { display: grid; gap: 8px; }
+.minha-lista h2 { font: 700 11px/1 var(--fonte); text-transform: uppercase; letter-spacing: .09em; color: var(--suave); }
+.minha-lista h2 span { font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 12.5px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.tile { display: grid; gap: 3px; align-content: start; padding: 12px 14px; text-align: left; background: var(--superficie); border: 1px solid var(--linha);
+  border-radius: var(--raio); box-shadow: var(--sombra); }
+.tile span { font-size: 12px; font-weight: 600; color: var(--suave); }
+.tile b { font: 800 semi-condensed 23px/1.1 var(--fonte); font-variant-numeric: tabular-nums; letter-spacing: -.01em; white-space: nowrap; }
+.tile b.pos { color: var(--bom); } .tile b.neg { color: var(--ruim); }
+button.tile { cursor: pointer; background: var(--ruim-fundo); border-color: transparent; transition: filter .15s; }
+button.tile span, button.tile b { color: var(--ruim); }
+button.tile:hover { filter: brightness(.97); }
+button.tile[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--ruim); }
 
 /* abas e barra */
-.abas { display: flex; gap: 2px; overflow-x: auto; border-bottom: 1px solid var(--linha); scrollbar-width: none; }
-.abas button { flex: none; display: inline-flex; gap: 6px; padding: 7px 12px 8px; background: none; border: 0;
-  border-bottom: 2px solid transparent; margin-bottom: -1px; color: var(--suave); font-weight: 500; }
-.abas button:hover { color: var(--texto); }
-.abas button[aria-pressed="true"] { color: var(--acento); border-bottom-color: var(--acento); font-weight: 600; }
-.abas .qtd { font-variant-numeric: tabular-nums; font-size: 12.5px; opacity: .8; }
-.barra { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
-.barra .busca { flex: 1 1 240px; min-width: 0; }
-.barra .ordem { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--suave); white-space: nowrap; }
-.barra .ordem select { width: auto; color: var(--texto); }
-#btn-filtros::after { content: "▾"; font-size: 12px; }
+.abas { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px; margin: -2px; }
+.abas::-webkit-scrollbar { display: none; }
+.abas button { flex: none; display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 5px 14px; background: var(--superficie);
+  border: 1px solid var(--linha); border-radius: 999px; color: var(--suave); font-size: 13.5px; font-weight: 600; transition: background .15s, color .15s, border-color .15s; }
+.abas button:hover { color: var(--texto); border-color: var(--linha-forte); }
+.abas button[aria-pressed="true"] { background: var(--tinta); border-color: var(--tinta); color: var(--tinta-texto); }
+.abas .qtd { min-width: 22px; padding: 1px 7px; border-radius: 999px; background: var(--superficie-2); color: var(--suave); font-size: 12px; font-weight: 700;
+  font-variant-numeric: tabular-nums; text-align: center; }
+.abas button[aria-pressed="true"] .qtd { background: rgba(127, 127, 127, .3); color: inherit; }
+.barra { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.busca { position: relative; flex: 1 1 260px; min-width: 0; }
+.busca .ico { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--suave); pointer-events: none; }
+.busca input { padding-left: 40px; }
+.ordem { position: relative; display: flex; align-items: center; min-width: 0; }
+.ordem .ico { position: absolute; left: 12px; color: var(--suave); pointer-events: none; }
+.ordem select { width: auto; max-width: 100%; padding-left: 38px; font-weight: 600; font-size: 13.5px; text-overflow: ellipsis; }
+.bolha { min-width: 20px; padding: 1px 6px; border-radius: 999px; background: var(--tinta); color: var(--tinta-texto); font-size: 11.5px; font-weight: 700; text-align: center; }
 #btn-filtros[aria-expanded="true"] { background: var(--acento-fundo); border-color: var(--acento); color: var(--acento); }
-#btn-filtros[aria-expanded="true"]::after { content: "▴"; }
-.alternar { display: inline-flex; border: 1px solid var(--linha-forte); border-radius: 6px; overflow: hidden; }
-.alternar button { min-height: 34px; padding: 4px 12px; border: 0; background: var(--superficie); font-weight: 500; color: var(--suave); }
-.alternar button[aria-pressed="true"] { background: var(--acento-fundo); color: var(--acento); font-weight: 600; }
+.alternar { display: inline-flex; padding: 3px; gap: 2px; background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: var(--raio-p); }
+.alternar button { display: grid; place-items: center; width: 36px; height: 32px; padding: 0; border: 0; border-radius: 7px; background: none; color: var(--suave); }
+.alternar button:hover { color: var(--texto); }
+.alternar button[aria-pressed="true"] { background: var(--tinta); color: var(--tinta-texto); }
+.linha-ativos { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 34px; }
 .ativos { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; color: var(--suave); }
-.ativos > b { color: var(--texto); font-weight: 600; margin-right: 4px; }
-.filtro-ativo { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; background: var(--acento-fundo); color: var(--acento);
-  border: 0; border-radius: 4px; font-size: 12.5px; font-weight: 500; }
+.ativos > b { color: var(--texto); font-weight: 700; margin-right: 4px; }
+.filtro-ativo { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; background: var(--acento-fundo); color: var(--acento);
+  border: 0; border-radius: 999px; font-size: 12.5px; font-weight: 600; }
 .filtro-ativo::after { content: "✕"; font-size: 10px; }
-.limpar { background: none; border: 0; color: var(--acento); font-size: 12.5px; padding: 2px 4px; text-decoration: underline; }
+.limpar { background: none; border: 0; color: var(--suave); font-size: 12.5px; font-weight: 600; padding: 2px 4px; text-decoration: underline; }
 
 /* cartões */
-.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(272px, 1fr)); gap: 14px; }
+.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(288px, 1fr)); gap: 16px; }
 .cartao { position: relative; display: flex; flex-direction: column; background: var(--superficie); border: 1px solid var(--linha);
-  border-radius: 8px; overflow: hidden; box-shadow: var(--sombra); cursor: pointer; content-visibility: auto; contain-intrinsic-size: auto 470px; }
-.cartao:hover { border-color: var(--linha-forte); }
-.cartao.m-interesse { border-color: var(--bom); box-shadow: 0 0 0 1px var(--bom); }
-.cartao.m-talvez { border-color: var(--atencao); box-shadow: 0 0 0 1px var(--atencao); }
-.cartao.m-descartado { opacity: .62; }
+  border-radius: var(--raio); overflow: hidden; box-shadow: var(--sombra); cursor: pointer; content-visibility: auto; contain-intrinsic-size: auto 460px;
+  transition: box-shadow .18s, transform .18s, border-color .18s; }
+@media (hover: hover) {
+  .cartao:hover { transform: translateY(-2px); box-shadow: var(--sombra-media); border-color: var(--linha-forte); }
+}
+.cartao.m-interesse { border-color: var(--bom-forte); box-shadow: 0 0 0 1px var(--bom-forte), var(--sombra); }
+.cartao.m-talvez { border-color: var(--ambar); box-shadow: 0 0 0 1px var(--ambar), var(--sombra); }
+.cartao.m-descartado { opacity: .6; }
 .cartao.m-descartado img { filter: grayscale(1); }
 /* A imagem fica fora do fluxo: foto vertical não estica o cartão nem a linha inteira. */
 .foto { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--superficie-2); }
 .foto img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
-.foto .placa { position: absolute; top: 8px; left: 8px; }
-.foto .qtd-fotos { position: absolute; right: 8px; bottom: 8px; padding: 1px 7px; border-radius: 4px; background: rgba(10, 16, 22, .74); color: #fff; font-size: 12px; font-weight: 500; }
+.foto::after { content: ""; position: absolute; inset: auto 0 0 0; height: 42%; background: linear-gradient(transparent, rgba(6, 10, 16, .5)); pointer-events: none; }
+.foto .placa, .foto .qtd-fotos, .foto .selo-marca, .foto .estrela { position: absolute; z-index: 1; }
+.foto .placa { top: 10px; left: 10px; }
+.foto .qtd-fotos { right: 10px; bottom: 10px; padding: 2px 8px; border-radius: 999px; background: rgba(8, 12, 18, .72); color: #fff; font-size: 11.5px; font-weight: 600; }
 .foto .sem-foto { position: absolute; inset: 0; display: grid; place-items: center; color: var(--suave); font-size: 13px; }
-.foto .selo-marca { position: absolute; top: 8px; right: 8px; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+.foto .selo-marca { left: 10px; bottom: 10px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 4px rgba(0, 0, 0, .25); }
+.selo-marca.interesse { background: #0f9d5f; color: #fff; }
+.selo-marca.talvez { background: #f2b01e; color: #231a00; }
+.selo-marca.descartado { background: rgba(8, 12, 18, .78); color: #fff; }
 /* Estrela: destaque à parte, vale junto com Quero, Talvez ou Descartar. */
-.estrela { display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0; background: rgba(10, 16, 22, .62); color: #fff;
-  border: 0; border-radius: 50%; font-size: 20px; line-height: 1; }
-.estrela:hover { background: rgba(10, 16, 22, .86); }
-.estrela[aria-pressed="true"] { color: #f6b600; }
-.foto .estrela { position: absolute; left: 8px; bottom: 8px; }
-.btn.estrela-ficha { font-size: 20px; color: var(--suave); }
-.btn.estrela-ficha[aria-pressed="true"] { color: #f6b600; border-color: #f6b600; background: var(--atencao-fundo); }
-.lotes .no-estrela { color: #f6b600; font-size: 15px; }
-.selo-marca.interesse { background: var(--bom); color: var(--superficie); }
-.selo-marca.talvez { background: var(--atencao); color: var(--superficie); }
-.selo-marca.descartado { background: var(--suave); color: var(--superficie); }
-.miolo { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 11px 12px 12px; }
-.miolo h3 { font: 700 17px/1.15 var(--fonte-numero); letter-spacing: .005em; overflow-wrap: anywhere; }
-.meta { color: var(--suave); font-size: 12.5px; line-height: 1.35; margin-top: 2px; }
-.etiquetas { display: flex; flex-wrap: wrap; gap: 4px; }
-.etiqueta { padding: 0 6px; border-radius: 4px; background: var(--superficie-2); font-size: 12px; font-weight: 500; line-height: 1.6; }
+.estrela { display: inline-grid; place-items: center; width: 36px; height: 36px; padding: 0 0 1px; background: rgba(8, 12, 18, .55); color: #fff;
+  border: 0; border-radius: 50%; font-size: 19px; line-height: 1; transition: background .15s, transform .15s; }
+.estrela:hover { background: rgba(8, 12, 18, .82); transform: scale(1.06); }
+.estrela[aria-pressed="true"] { color: var(--ouro); background: rgba(8, 12, 18, .78); }
+.foto .estrela { top: 8px; right: 8px; }
+.btn.estrela-ficha { font-size: 19px; color: var(--suave); }
+.btn.estrela-ficha[aria-pressed="true"] { color: var(--ouro); border-color: var(--ouro); background: var(--atencao-fundo); }
+.lotes .no-estrela { color: var(--ouro); font-size: 15px; }
+.miolo { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 14px 14px 12px; }
+.titulo-linha { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.titulo-linha > div { min-width: 0; }
+.miolo h3 { font: 800 semi-condensed 18px/1.15 var(--fonte); letter-spacing: -.005em; overflow-wrap: anywhere; }
+.meta { color: var(--suave); font-size: 12.5px; line-height: 1.35; margin-top: 3px; }
+.nota-selo { flex: none; display: grid; place-items: center; min-width: 36px; height: 36px; padding: 0 6px; border-radius: 10px;
+  font: 800 semi-condensed 18px/1 var(--fonte); font-variant-numeric: tabular-nums; }
+.nota-selo.bom { background: var(--bom-fundo); color: var(--bom); }
+.nota-selo.atencao { background: var(--atencao-fundo); color: var(--atencao); }
+.nota-selo.ruim { background: var(--ruim-fundo); color: var(--ruim); }
+.etiquetas { display: flex; flex-wrap: wrap; gap: 5px; }
+.etiqueta { padding: 2px 9px; border-radius: 999px; background: var(--superficie-2); font-size: 12px; font-weight: 600; line-height: 1.5; }
 .etiqueta.atencao { background: var(--atencao-fundo); color: var(--atencao); }
 .etiqueta.ruim { background: var(--ruim-fundo); color: var(--ruim); }
 .etiqueta.tag { background: var(--acento-fundo); color: var(--acento); }
 .etiqueta.bom { background: var(--bom-fundo); color: var(--bom); }
-.etiqueta.nota-b { font-weight: 700; font-variant-numeric: tabular-nums; }
-.numeros { display: grid; grid-template-columns: auto auto; justify-content: space-between; gap: 8px; margin-top: auto; }
-.numeros > div:last-child { text-align: right; }
-.valor { display: block; font: 700 23px/1.1 var(--fonte-numero); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.etiqueta.nota-b { font-weight: 800; font-variant-numeric: tabular-nums; }
+.painel { display: grid; gap: 9px; margin-top: auto; padding: 11px 12px; background: var(--superficie-2); border-radius: var(--raio-p); }
+.numeros { display: grid; grid-template-columns: auto auto; justify-content: space-between; gap: 8px; }
+.numeros > div:last-child:not(:first-child) { text-align: right; }
+.valor { display: block; font: 800 semi-condensed 24px/1.15 var(--fonte); font-variant-numeric: tabular-nums; letter-spacing: -.01em; white-space: nowrap; }
 .valor.pos { color: var(--bom); } .valor.neg { color: var(--ruim); }
 .nota-sub { font-size: 12px; color: var(--suave); white-space: nowrap; }
-.margem { position: relative; height: 6px; border-radius: 3px; background: var(--bom-fundo); box-shadow: inset 0 0 0 1px var(--linha); }
-.margem i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--suave); }
-.margem.neg i { background: var(--ruim); }
-.margem u { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--texto); }
-.proj-min { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 4px 8px; background: var(--superficie-2); border-radius: 4px; font-size: 12.5px; color: var(--suave); }
-.proj-min b { font: 700 15px/1.2 var(--fonte-numero); white-space: nowrap; }
+.margem { position: relative; height: 6px; border-radius: 999px; background: var(--bom-forte); }
+.margem i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px 0 0 999px; background: var(--linha-forte); box-shadow: 1px 0 0 var(--superficie-2); }
+.margem.neg { background: var(--ruim-fundo); }
+.margem.neg i { background: var(--ruim); border-radius: 999px; box-shadow: none; }
+.margem u { position: absolute; top: -3px; bottom: -3px; width: 3px; margin-left: -1px; border-radius: 2px; background: var(--texto); box-shadow: 0 0 0 1.5px var(--superficie-2); }
+.proj-min { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding-top: 8px; border-top: 1px dashed var(--linha-forte);
+  font-size: 12.5px; color: var(--suave); }
+.proj-min b { font: 800 semi-condensed 15px/1.2 var(--fonte); white-space: nowrap; }
 .proj-min b.pos { color: var(--bom); } .proj-min b.neg { color: var(--ruim); }
-.legenda { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; font: 500 12.5px/1.2 var(--fonte-numero); color: var(--suave); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.legenda b { color: var(--texto); font-weight: 600; }
+.trinca { display: grid; grid-template-columns: repeat(3, auto); justify-content: space-between; gap: 8px; padding: 0 2px; }
+.trinca > div { display: grid; gap: 1px; min-width: 0; }
+.trinca > div:nth-child(2) { text-align: center; } .trinca > div:last-child { text-align: right; }
+.trinca span { font-size: 11px; font-weight: 600; color: var(--suave); white-space: nowrap; }
+.trinca b { font: 700 semi-condensed 14px/1.2 var(--fonte); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .sem-fipe { font-size: 12.5px; color: var(--suave); }
-.nota-previa { padding: 5px 8px; background: var(--superficie-2); border-radius: 4px; font-size: 12.5px; white-space: pre-line;
+.nota-previa { padding: 6px 10px; background: var(--superficie-2); border-radius: 8px; font-size: 12.5px; white-space: pre-line;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.acoes { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--linha); }
-.acoes button { min-height: 36px; background: none; border: 0; font-size: 13px; font-weight: 500; color: var(--suave); }
-.acoes button + button { border-left: 1px solid var(--linha); }
-.acoes button:hover { background: var(--superficie-2); color: var(--texto); }
-.on-interesse { background: var(--bom-fundo) !important; color: var(--bom) !important; font-weight: 600 !important; }
-.on-talvez { background: var(--atencao-fundo) !important; color: var(--atencao) !important; font-weight: 600 !important; }
-.on-descartado { background: var(--ruim-fundo) !important; color: var(--ruim) !important; font-weight: 600 !important; }
+.acoes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 14px 14px; }
+.acoes button { min-height: 38px; background: var(--superficie); border: 1px solid var(--linha); border-radius: var(--raio-p); font-size: 13px; font-weight: 600;
+  color: var(--suave); transition: background .15s, color .15s, border-color .15s; }
+.acoes button:hover { background: var(--superficie-2); border-color: var(--linha-forte); color: var(--texto); }
+.on-interesse { background: var(--bom-fundo) !important; border-color: transparent !important; color: var(--bom) !important; font-weight: 700 !important; }
+.on-talvez { background: var(--atencao-fundo) !important; border-color: transparent !important; color: var(--atencao) !important; font-weight: 700 !important; }
+.on-descartado { background: var(--ruim-fundo) !important; border-color: transparent !important; color: var(--ruim) !important; font-weight: 700 !important; }
 
 /* tabela */
-.tabela-caixa { max-height: calc(100vh - 210px); overflow: auto; background: var(--superficie); border: 1px solid var(--linha); border-radius: 8px; }
+.tabela-caixa { max-height: calc(100vh - 200px); overflow: auto; background: var(--superficie); border: 1px solid var(--linha); border-radius: var(--raio); box-shadow: var(--sombra); }
 table.lotes { width: 100%; border-collapse: separate; border-spacing: 0; }
-.lotes th { position: sticky; top: 0; z-index: 1; padding: 8px; background: var(--superficie-2); border-bottom: 1px solid var(--linha-forte);
-  font-size: 12px; font-weight: 600; color: var(--suave); text-align: left; white-space: nowrap; }
-.lotes th button { padding: 0; background: none; border: 0; font-weight: 600; color: inherit; white-space: nowrap; }
-.lotes th button:hover, .lotes th button[aria-pressed="true"] { color: var(--acento); }
-.lotes td { padding: 6px 8px; border-bottom: 1px solid var(--linha); vertical-align: middle; }
+.lotes th { position: sticky; top: 0; z-index: 1; padding: 10px; background: var(--superficie-2); border-bottom: 1px solid var(--linha);
+  font-size: 11.5px; font-weight: 700; color: var(--suave); text-align: left; white-space: nowrap; }
+.lotes th button { padding: 0; background: none; border: 0; font-weight: 700; color: inherit; white-space: nowrap; }
+.lotes th button:hover, .lotes th button[aria-pressed="true"] { color: var(--texto); }
+.lotes td { padding: 8px 10px; border-bottom: 1px solid var(--linha); vertical-align: middle; }
+.lotes tbody tr:last-child td { border-bottom: 0; }
 .lotes .dir { text-align: right; white-space: nowrap; }
 .lotes tbody tr { cursor: pointer; }
 .lotes tbody tr:hover td { background: var(--superficie-2); }
-.lotes tr.m-interesse td:first-child { box-shadow: inset 3px 0 0 var(--bom); }
-.lotes tr.m-talvez td:first-child { box-shadow: inset 3px 0 0 var(--atencao); }
+.lotes tr.m-interesse td:first-child { box-shadow: inset 3px 0 0 var(--bom-forte); }
+.lotes tr.m-talvez td:first-child { box-shadow: inset 3px 0 0 var(--ambar); }
 .lotes tr.m-descartado { opacity: .55; }
-.lotes img, .lotes .mini-vazia { display: block; width: 66px; height: 44px; object-fit: cover; border-radius: 4px; background: var(--superficie-2); }
-.lotes .nlote, .lotes .forte { font: 700 16px/1 var(--fonte-numero); font-variant-numeric: tabular-nums; }
-.lotes .veic { min-width: 170px; }
-.lotes .veic b { font: 700 14.5px/1.15 var(--fonte-numero); }
+.lotes img, .lotes .mini-vazia { display: block; width: 72px; height: 46px; object-fit: cover; border-radius: 8px; background: var(--superficie-2); }
+.lotes .nlote, .lotes .forte { font: 800 semi-condensed 16px/1 var(--fonte); font-variant-numeric: tabular-nums; }
+.lotes .veic { min-width: 180px; }
+.lotes .veic b { font: 800 semi-condensed 15px/1.15 var(--fonte); }
 .lotes .pos { color: var(--bom); } .lotes .neg { color: var(--ruim); }
-.lotes .nota { max-width: 110px; overflow: hidden; color: var(--suave); font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
-.aprox { color: var(--atencao); font-weight: 600; }
+.lotes .nota { max-width: 120px; overflow: hidden; color: var(--suave); font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
+.aprox { color: var(--atencao); font-weight: 700; }
 
-.vazio { display: grid; justify-items: center; gap: 10px; padding: 64px 20px; text-align: center; color: var(--suave); }
+.vazio { display: grid; justify-items: center; gap: 12px; padding: 64px 20px; text-align: center; color: var(--suave);
+  border: 1px dashed var(--linha-forte); border-radius: var(--raio); }
 
 /* ficha do lote */
-.cobertura { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 20px; background: var(--cobertura); }
-.ficha { display: grid; grid-template-rows: auto minmax(0, 1fr); width: min(1280px, 100%); height: min(860px, 100%);
-  background: var(--superficie); border-radius: 10px; overflow: hidden; box-shadow: var(--sombra-alta); }
-.ficha-topo { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--linha); }
+.cobertura { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 24px; background: var(--cobertura); }
+.ficha { display: grid; grid-template-rows: auto minmax(0, 1fr); width: min(1320px, 100%); height: min(880px, 100%);
+  background: var(--fundo); border-radius: 18px; overflow: hidden; box-shadow: var(--sombra-alta); }
+.ficha-topo { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--superficie); border-bottom: 1px solid var(--linha); }
 .ficha-titulo { flex: 1; min-width: 0; }
-.ficha-titulo h2 { font: 700 21px/1.1 var(--fonte-numero); overflow-wrap: anywhere; }
+.ficha-titulo h2 { font: 800 semi-condensed 22px/1.1 var(--fonte); overflow-wrap: anywhere; }
 .ficha-acoes { display: flex; align-items: center; gap: 6px; }
 .salvo { font-size: 12.5px; color: var(--suave); margin-right: 6px; white-space: nowrap; }
-.ficha-corpo { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); min-height: 0; }
-.coluna { min-height: 0; overflow-y: auto; padding: 14px; display: grid; grid-auto-rows: max-content; gap: 16px; scrollbar-width: thin; }
-.coluna + .coluna { border-left: 1px solid var(--linha); background: var(--superficie-2); }
-.foto-grande { position: relative; aspect-ratio: 16 / 10; max-width: 100%; background: #0b0f14; border-radius: 6px; overflow: hidden; }
+.ficha-corpo { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); min-height: 0; }
+.coluna { min-height: 0; overflow-y: auto; padding: 16px; display: grid; grid-auto-rows: max-content; gap: 14px; scrollbar-width: thin; }
+.coluna + .coluna { border-left: 1px solid var(--linha); }
+.foto-grande { position: relative; aspect-ratio: 16 / 10; max-width: 100%; background: #0b0f14; border-radius: 12px; overflow: hidden; }
 .foto-grande img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; cursor: zoom-in; }
-.seta { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 54px; background: rgba(10, 16, 22, .62); color: #fff; border: 0; border-radius: 5px; font-size: 20px; line-height: 1; }
-.seta:hover { background: rgba(10, 16, 22, .86); }
-.seta.ant { left: 8px; } .seta.prox { right: 8px; }
-.pos-foto { position: absolute; right: 8px; bottom: 8px; padding: 1px 8px; border-radius: 4px; background: rgba(10, 16, 22, .74); color: #fff; font-size: 12.5px; }
-.miniaturas { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 5px; margin-top: 6px; }
-.miniaturas img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 4px; cursor: pointer; opacity: .78; }
+.seta { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 56px; background: rgba(8, 12, 18, .55); color: #fff; border: 0; border-radius: 10px; font-size: 22px; line-height: 1; }
+.seta:hover { background: rgba(8, 12, 18, .85); }
+.seta.ant { left: 10px; } .seta.prox { right: 10px; }
+.pos-foto { position: absolute; right: 10px; bottom: 10px; padding: 2px 9px; border-radius: 999px; background: rgba(8, 12, 18, .72); color: #fff; font-size: 12px; font-weight: 600; }
+.miniaturas { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 6px; margin-top: 8px; }
+.miniaturas img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 8px; cursor: pointer; opacity: .7; transition: opacity .15s; }
 .miniaturas img:hover { opacity: 1; }
-.miniaturas img.ativa { opacity: 1; outline: 2px solid var(--acento); outline-offset: 1px; }
-.sem-fotos { padding: 40px 16px; text-align: center; background: var(--superficie-2); border-radius: 6px; color: var(--suave); }
-.secao > h3 { margin-bottom: 8px; font: 600 11.5px/1 var(--fonte); text-transform: uppercase; letter-spacing: .08em; color: var(--suave); }
+.miniaturas img.ativa { opacity: 1; outline: 2px solid var(--tinta); outline-offset: 1px; }
+.sem-fotos { padding: 40px 16px; text-align: center; background: var(--superficie); border: 1px dashed var(--linha-forte); border-radius: 12px; color: var(--suave); }
+.secao, .bloco, .resumo-preco { padding: 14px; background: var(--superficie); border: 1px solid var(--linha); border-radius: var(--raio); box-shadow: var(--sombra); }
+.secao > h3, .bloco > h3 { font: 700 11px/1 var(--fonte); text-transform: uppercase; letter-spacing: .09em; color: var(--suave); }
+.secao > h3 { margin-bottom: 10px; }
 dl.campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 20px; margin: 0; }
-dl.campos > div { display: grid; grid-template-columns: 110px 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--linha); }
-dl.campos dt { color: var(--suave); font-size: 13px; } dl.campos dd { margin: 0; overflow-wrap: anywhere; }
+dl.campos > div { display: grid; grid-template-columns: 112px 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--linha); }
+dl.campos dt { color: var(--suave); font-size: 13px; } dl.campos dd { margin: 0; overflow-wrap: anywhere; font-weight: 500; }
 dl.campos > div.largo { grid-column: 1 / -1; }
 table.hist { width: 100%; border-collapse: collapse; font-size: 13px; }
-.hist th, .hist td { padding: 4px 0; text-align: right; border-bottom: 1px solid var(--linha); }
+.hist th, .hist td { padding: 5px 0; text-align: right; border-bottom: 1px solid var(--linha); }
 .hist th:first-child, .hist td:first-child { text-align: left; }
-.hist th { color: var(--suave); font-weight: 500; font-size: 12px; }
-.marcador { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--linha-forte); border-radius: 6px; overflow: hidden; background: var(--superficie); }
-.marcador button { min-height: 40px; background: none; border: 0; font-weight: 500; }
-.marcador button + button { border-left: 1px solid var(--linha-forte); }
-.marcador button:hover { background: var(--superficie-2); }
-.resumo-preco { display: grid; grid-template-columns: auto auto; justify-content: space-between; gap: 12px; }
+.hist th { color: var(--suave); font-weight: 600; font-size: 12px; }
+.marcador { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 6px; background: var(--superficie); border: 1px solid var(--linha);
+  border-radius: var(--raio); box-shadow: var(--sombra); }
+.marcador button { min-height: 44px; background: none; border: 1px solid transparent; border-radius: var(--raio-p); font-size: 14px; font-weight: 600; color: var(--suave);
+  transition: background .15s, color .15s; }
+.marcador button:hover { background: var(--superficie-2); color: var(--texto); }
+.resumo-preco { display: grid; grid-template-columns: auto auto; justify-content: space-between; align-items: end; gap: 12px; }
 .resumo-preco > div:last-child { text-align: right; }
-.resumo-preco .valor { font-size: 30px; }
-.bloco { display: grid; gap: 10px; padding: 12px; background: var(--superficie); border: 1px solid var(--linha); border-radius: 8px; }
-.bloco > h3 { font: 600 11.5px/1 var(--fonte); text-transform: uppercase; letter-spacing: .08em; color: var(--suave); }
-.versao-fipe { display: grid; gap: 4px; }
-.versao-fipe .nome { font-weight: 500; }
-.selo { font-size: 12px; font-weight: 600; padding: 0 6px; border-radius: 4px; white-space: nowrap; }
+.resumo-preco .valor { font-size: 34px; }
+.bloco { display: grid; gap: 12px; }
+.versao-fipe { display: grid; gap: 5px; }
+.versao-fipe .nome { font-weight: 600; }
+.selo { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
 .selo.alta, .selo.manual { background: var(--bom-fundo); color: var(--bom); }
 .selo.media { background: var(--atencao-fundo); color: var(--atencao); }
 .selo.baixa, .selo.nao_achei { background: var(--ruim-fundo); color: var(--ruim); }
 table.conta { width: 100%; border-collapse: collapse; }
-.conta td { padding: 3px 0; }
-.conta td:last-child { text-align: right; white-space: nowrap; }
-.conta tr.total td { padding-top: 8px; border-top: 1px solid var(--linha-forte); font: 700 21px/1.1 var(--fonte-numero); }
-.conta tr.total td:first-child { font-size: 16px; }
+.conta td { padding: 4px 0; }
+.conta td:first-child { color: var(--suave); }
+.conta tr:nth-child(-n+2) td:first-child { color: var(--texto); font-weight: 500; }
+.conta td:last-child { text-align: right; white-space: nowrap; font-weight: 500; }
+.conta tr.total td { padding-top: 10px; border-top: 1px solid var(--linha-forte); font: 800 semi-condensed 24px/1.1 var(--fonte); }
+.conta tr.total td:first-child { font-size: 16px; color: inherit; }
 .conta tr.total.pos td { color: var(--bom); } .conta tr.total.neg td { color: var(--ruim); }
 .dica { color: var(--suave); font-size: 12.5px; }
+.dica b { color: var(--texto); }
 .falta { color: var(--atencao); font-size: 12.5px; }
 .link { padding: 0; background: none; border: 0; color: var(--acento); text-decoration: underline; font-size: inherit; }
-.alertas { display: grid; gap: 4px; }
-.alerta { padding: 4px 8px; border-radius: 4px; font-size: 12.5px; font-weight: 500; }
+.alertas { display: grid; gap: 5px; }
+.alerta { padding: 5px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 600; }
 .alerta.ruim { background: var(--ruim-fundo); color: var(--ruim); }
 .alerta.atencao { background: var(--atencao-fundo); color: var(--atencao); }
 #a-notas { min-height: 96px; resize: vertical; }
 
 /* nota do carro e lance teto */
 .notas-linha { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
-.notas-linha button { min-height: 36px; padding: 0; background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: 5px;
-  font: 600 15px/1 var(--fonte-numero); color: var(--suave); }
-.notas-linha button:hover { background: var(--superficie-2); color: var(--texto); }
-.notas-linha button[aria-pressed="true"] { background: var(--acento); border-color: var(--acento); color: var(--superficie); }
-.alvo { display: grid; gap: 6px; padding-top: 10px; border-top: 1px solid var(--linha); }
+.notas-linha button { min-height: 38px; padding: 0; background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: 8px;
+  font: 700 semi-condensed 16px/1 var(--fonte); color: var(--suave); transition: background .12s, color .12s, border-color .12s; }
+.notas-linha button:hover { background: var(--superficie-2); color: var(--texto); border-color: var(--suave); }
+.notas-linha button[aria-pressed="true"] { background: var(--tinta); border-color: var(--tinta); color: var(--tinta-texto); }
+.alvo { display: grid; gap: 7px; padding-top: 12px; border-top: 1px solid var(--linha); }
 .alvo-msg { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 13px; }
-.alvo-msg .btn { min-height: 28px; padding: 2px 10px; font-size: 12.5px; }
-.minha-lista div b.neg { color: var(--ruim); }
+.alvo-msg .btn { min-height: 30px; padding: 2px 11px; font-size: 12.5px; }
 
 /* serviços */
-.drop summary { display: flex; justify-content: space-between; align-items: center; min-height: 36px; padding: 6px 10px; list-style: none; cursor: pointer;
-  background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: 6px; }
+.drop summary { display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 8px 12px; list-style: none; cursor: pointer;
+  background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: var(--raio-p); font-weight: 500; }
 .drop summary::-webkit-details-marker { display: none; }
 .drop summary::after { content: "▾"; color: var(--suave); }
 .drop[open] summary::after { content: "▴"; }
-.drop-lista { margin-top: 4px; padding: 4px; max-height: 240px; overflow-y: auto; background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: 6px; }
-.drop-lista label { display: flex; align-items: center; gap: 8px; padding: 5px 7px; border-radius: 4px; cursor: pointer; }
+.drop-lista { margin-top: 6px; padding: 5px; max-height: 240px; overflow-y: auto; background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: var(--raio-p); }
+.drop-lista label { display: flex; align-items: center; gap: 9px; padding: 6px 8px; border-radius: 7px; cursor: pointer; }
 .drop-lista label:hover { background: var(--superficie-2); }
-.drop-lista input[type=checkbox] { width: 16px; height: 16px; min-height: 0; margin: 0; flex: none; accent-color: var(--acento); }
+.drop-lista input[type=checkbox] { width: 17px; height: 17px; min-height: 0; margin: 0; padding: 0; flex: none; accent-color: var(--tinta); }
 .drop-lista .preco-est { margin-left: auto; color: var(--suave); font-size: 12.5px; }
-.linha-novo { display: flex; gap: 6px; padding: 6px 4px 2px; margin-top: 4px; border-top: 1px solid var(--linha); }
-.linha-item { display: grid; grid-template-columns: minmax(0, 1fr) 110px 28px; align-items: center; gap: 6px; }
-.linha-item input { min-height: 32px; padding: 3px 8px; }
+.linha-novo { display: flex; gap: 6px; padding: 7px 4px 2px; margin-top: 5px; border-top: 1px solid var(--linha); }
+.linha-item { display: grid; grid-template-columns: minmax(0, 1fr) 112px 28px; align-items: center; gap: 6px; }
+.linha-item input { min-height: 34px; padding: 4px 9px; }
 .tirar { padding: 4px; background: none; border: 0; color: var(--suave); }
 .tirar:hover { color: var(--ruim); }
-.itens { display: grid; gap: 5px; }
-.itens-total { display: flex; justify-content: space-between; gap: 12px; padding-top: 6px; border-top: 1px solid var(--linha); font-weight: 600; }
+.itens { display: grid; gap: 6px; }
+.itens-total { display: flex; justify-content: space-between; gap: 12px; padding-top: 8px; border-top: 1px solid var(--linha); font-weight: 700; }
 .itens-total span:first-child { font-weight: 400; color: var(--suave); font-size: 13px; }
 
 /* premissas */
-.modal { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; width: min(840px, 100%); max-height: 100%; background: var(--superficie); border-radius: 10px; box-shadow: var(--sombra-alta); overflow: hidden; }
-.modal > header { padding: 14px 18px; border-bottom: 1px solid var(--linha); }
-.modal > header h2 { font: 700 21px/1.1 var(--fonte-numero); }
-.modal-corpo { min-height: 0; padding: 16px 18px; overflow-y: auto; display: grid; grid-auto-rows: max-content; gap: 20px; }
-.modal-corpo h3 { font: 600 15px/1.2 var(--fonte); }
-.modal > footer { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 12px 18px; border-top: 1px solid var(--linha); }
+.modal { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; width: min(860px, 100%); max-height: 100%; background: var(--superficie); border-radius: 18px; box-shadow: var(--sombra-alta); overflow: hidden; }
+.modal > header { padding: 16px 20px; border-bottom: 1px solid var(--linha); }
+.modal > header h2 { font: 800 semi-condensed 22px/1.1 var(--fonte); }
+.modal-corpo { min-height: 0; padding: 18px 20px; overflow-y: auto; display: grid; grid-auto-rows: max-content; gap: 20px; }
+.modal-corpo h3 { font: 700 15px/1.2 var(--fonte); }
+.modal > footer { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--linha); background: var(--superficie-2); }
 .modal > footer .dica { margin-right: auto; color: var(--ruim); }
 .itens.colunas { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 6px 16px; }
 
 /* tela cheia e aviso rápido */
-.tela-cheia { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; background: rgba(4, 8, 12, .95); }
+.tela-cheia { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; background: rgba(4, 8, 12, .96); }
 .tela-cheia img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .tela-cheia .seta { width: 48px; height: 76px; font-size: 26px; background: rgba(255, 255, 255, .14); }
 .tela-cheia .seta:hover { background: rgba(255, 255, 255, .28); }
-.tela-cheia .fechar { position: absolute; top: 12px; right: 12px; width: 42px; height: 42px; background: rgba(255, 255, 255, .14); color: #fff; border: 0; border-radius: 6px; font-size: 16px; }
+.tela-cheia .fechar { position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; background: rgba(255, 255, 255, .14); color: #fff; border: 0; border-radius: 12px; font-size: 16px; }
 .tela-cheia .pos-foto { right: auto; left: 50%; transform: translateX(-50%); bottom: 14px; }
-.recado { position: fixed; left: 50%; bottom: 20px; z-index: 50; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; max-width: calc(100% - 32px);
-  padding: 8px 8px 8px 14px; background: var(--texto); color: var(--superficie); border-radius: 6px; box-shadow: var(--sombra-alta); }
-.recado button { padding: 3px 10px; background: none; border: 1px solid currentColor; border-radius: 4px; color: inherit; font-weight: 600; }
+.recado { position: fixed; left: 50%; bottom: 22px; z-index: 50; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; max-width: calc(100% - 32px);
+  padding: 10px 10px 10px 16px; background: var(--tinta); color: var(--tinta-texto); border-radius: 12px; box-shadow: var(--sombra-alta); font-weight: 500; }
+.recado button { padding: 4px 11px; background: none; border: 1px solid currentColor; border-radius: 8px; color: inherit; font-weight: 700; }
 
 /* login */
-.login { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; background: var(--fundo); }
-.login-caixa { display: grid; gap: 14px; justify-items: stretch; width: min(380px, 100%); padding: 24px; background: var(--superficie); border: 1px solid var(--linha); border-radius: 10px; box-shadow: var(--sombra); }
+.login { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px;
+  background: radial-gradient(900px 480px at 50% -8%, var(--acento-fundo), transparent 70%), var(--fundo); }
+.login-caixa { display: grid; gap: 16px; justify-items: stretch; width: min(400px, 100%); padding: 28px; background: var(--superficie); border: 1px solid var(--linha);
+  border-radius: 20px; box-shadow: var(--sombra-media); }
 .login-caixa .placa { justify-self: start; }
-.login-caixa h1 { font: 700 26px/1.1 var(--fonte-numero); }
-.login-erro { min-height: 18px; color: var(--ruim); font-size: 13px; }
+.login-caixa h1 { font: 800 semi-condensed 28px/1.1 var(--fonte); letter-spacing: -.01em; }
+.login-caixa .btn { min-height: 44px; font-size: 15px; }
+.login-erro { min-height: 18px; color: var(--ruim); font-size: 13px; font-weight: 500; }
 
 @media (max-width: 1000px) {
   .cobertura { padding: 0; }
   .ficha { width: 100%; height: 100%; border-radius: 0; }
-  /* Uma coluna só: fotos, depois a decisão e a conta, e por último os dados do lote. */
-  .ficha-corpo { display: flex; flex-direction: column; gap: 16px; padding: 14px; overflow-y: auto; }
+  /* Uma coluna só: fotos, o preço e a conta, os dados do lote, e a marcação presa no rodapé. */
+  .ficha-corpo { display: flex; flex-direction: column; gap: 14px; padding: 14px 14px 0; overflow-y: auto; }
   .coluna { display: contents; }
   .coluna > * { order: 1; flex: none; }
   .coluna:first-child > * { order: 2; }
   .coluna:first-child > .galeria { order: 0; }
+  .coluna > .marcador { order: 99; position: sticky; bottom: 0; z-index: 2; margin: 0 -14px; padding: 8px 14px calc(8px + env(safe-area-inset-bottom, 0px));
+    border-width: 1px 0 0; border-radius: 0; box-shadow: 0 -8px 20px rgba(8, 12, 18, .1); }
+  .dica-atalhos { display: none; }
   .modal { height: 100%; border-radius: 0; width: 100%; }
 }
 @media (max-width: 860px) {
-  /* Continua fixo no topo ao rolar, só que mais baixo para sobrar tela para os lotes. */
-  .topo { padding: 6px 16px; gap: 4px 12px; }
-  .topo h1 { font-size: 18px; }
-  .topo .sub { font-size: 12px; }
-  .topo-acoes { margin-left: 0; gap: 6px; }
-  .topo-acoes .status { font-size: 12px; margin-right: 0; }
-  .topo-acoes .btn { min-height: 28px; padding: 2px 9px; font-size: 12.5px; }
-  .minha-lista { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
-  .minha-lista h2 { grid-column: 1 / -1; }
+  :root { --topo-altura: 56px; }
+  /* Continua fixo no topo ao rolar, só que baixo para sobrar tela para os lotes. */
+  .topo { padding: 7px 16px; gap: 10px; }
+  .marca-ico { width: 34px; height: 34px; border-radius: 10px; }
+  .topo-titulo { flex: 1; }
+  .topo h1 { font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topo .sub { font-size: 11.5px; line-height: 1.25; }
+  .topo-acoes { gap: 0; }
+  .topo-acoes .rot { display: none; }
+  .topo-acoes .btn.pequeno { width: 36px; min-height: 36px; padding: 0; }
+  .topo-acoes #btn-coletar { width: auto; padding: 0 10px; }
+  .status { padding: 0; margin-right: 6px; background: none; }
+  .status #status-texto { display: none; }
   .corpo.com-filtros { grid-template-columns: minmax(0, 1fr); }
-  /* No celular o menu ocupa a tela e o botão de fechar fica sempre à vista. */
-  .filtros { position: fixed; inset: 0; top: 0; z-index: 25; max-height: none; padding: 16px 16px 0; background: var(--superficie); align-content: start; }
-  .filtros-rodape { display: block; position: sticky; bottom: 0; margin: 0 -16px; padding: 10px 16px; background: var(--superficie); border-top: 1px solid var(--linha); }
-  .filtros-rodape .btn { width: 100%; }
-  .conteudo, .corpo.com-filtros .conteudo { padding: 12px 16px 40px; }
+  /* No celular os filtros ocupam a tela e o botão de ver os lotes fica sempre à vista. */
+  .filtros { position: fixed; inset: 0; top: 0; z-index: 25; max-height: none; padding: 16px 16px 0; background: var(--fundo); }
+  .filtros-rodape { display: block; position: sticky; bottom: 0; margin: 0 -16px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--superficie); border-top: 1px solid var(--linha); }
+  .filtros-rodape .btn { width: 100%; min-height: 46px; font-size: 15px; }
+  .conteudo, .corpo.com-filtros .conteudo { padding: 14px 16px 44px; gap: 12px; }
   .aviso { padding: 8px 16px; }
+  /* O resumo vira uma faixa que rola de lado: uma linha só, em vez de três. */
+  .tiles { display: flex; gap: 8px; margin: 0 -16px; padding: 2px 16px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; }
+  .tiles::-webkit-scrollbar { display: none; }
+  .tile { flex: none; min-width: 128px; padding: 10px 12px; scroll-snap-align: start; }
+  .tile b { font-size: 20px; }
+  .abas { margin: -2px -16px; padding: 2px 16px; }
+  .busca { flex-basis: 100%; }
+  .ordem { flex: 1; }
+  .ordem select { width: 100%; }
+  .grade { gap: 14px; }
   .tabela-caixa { max-height: none; }
-  .barra .busca { flex-basis: 100%; order: -1; }
-  .ficha-acoes .salvo { display: none; }
-  .ficha-topo { flex-wrap: wrap; }
+  .ficha-topo { gap: 10px; padding: 10px 12px; flex-wrap: wrap; }
   .ficha-titulo { flex-basis: calc(100% - 90px); order: -1; }
+  .ficha-titulo h2 { font-size: 19px; }
+  .ficha-acoes { width: 100%; }
+  .ficha-acoes .salvo { display: none; }
+  .ficha-acoes .rot { display: none; }
+  .ficha-acoes [data-acao="fechar"] { margin-left: auto; }
+  .resumo-preco .valor { font-size: 30px; }
 }
-@media (prefers-reduced-motion: reduce) { .status.ativo i { animation: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .status.ativo i { animation: none; }
+  .cartao, .btn, .estrela { transition: none; }
+  .cartao:hover { transform: none; }
+}
 </style>
 </head>
 <body>
 <header class="topo">
-  <div>
+  <span class="marca-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13.5 3.5 7 7-2.8 2.8-7-7z"/><path d="M11.6 9.4 4 17a2 2 0 0 0 2.8 2.8l7.6-7.6"/><path d="M13 21h8"/></svg></span>
+  <div class="topo-titulo">
     <h1 id="titulo">Leilão</h1>
     <div class="sub num" id="sub">Carregando...</div>
   </div>
   <div class="topo-acoes">
     <span class="status" id="status" role="status"><i></i><span id="status-texto"></span></span>
-    <a class="btn" id="btn-edital" target="_blank" rel="noopener noreferrer" hidden>Edital</a>
-    <button class="btn" id="btn-premissas">Premissas</button>
-    <button class="btn" id="btn-coletar">Atualizar agora</button>
-    <button class="btn" id="btn-sair" hidden>Sair</button>
+    <a class="btn discreto pequeno" id="btn-edital" target="_blank" rel="noopener noreferrer" title="Edital do leilão" aria-label="Edital do leilão" hidden><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span class="rot">Edital</span></a>
+    <button class="btn discreto pequeno" id="btn-premissas" title="Premissas da conta" aria-label="Premissas da conta"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></svg><span class="rot">Premissas</span></button>
+    <button class="btn pequeno" id="btn-coletar">Atualizar agora</button>
+    <button class="btn discreto pequeno" id="btn-sair" title="Sair" aria-label="Sair" hidden><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 4H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M15 8l4 4-4 4M19 12H9"/></svg><span class="rot">Sair</span></button>
   </div>
 </header>
 <div class="avisos" id="avisos"></div>
 
 <div class="corpo" id="corpo">
   <aside class="filtros" id="filtros" aria-label="Filtros">
+    <div class="filtros-topo"><h2>Filtros</h2><button class="btn discreto pequeno" data-limpar>Limpar tudo</button></div>
     <section class="grupo">
       <h2>Dinheiro</h2>
       <label class="campo">Lance atual (R$)<div class="dupla"><input id="f-valor-de" type="number" min="0" step="500" placeholder="De" aria-label="Lance atual a partir de"><input id="f-valor-ate" type="number" min="0" step="500" placeholder="Até" aria-label="Lance atual até"></div></label>
@@ -445,19 +545,22 @@ table.conta { width: 100%; border-collapse: collapse; }
 
   <main class="conteudo">
     <section class="minha-lista" id="minha-lista" hidden aria-label="Lotes marcados como Quero">
-      <h2>Minha lista</h2>
-      <div><b id="r-interesse">0</b><span>lotes marcados como Quero</span></div>
-      <div><b id="r-atual">R$ 0</b><span>em lances atuais</span></div>
-      <div><b id="r-max">R$ 0</b><span>nos meus máximos</span></div>
-      <div><b id="r-capital">R$ 0</b><span>de desembolso com taxas e serviços</span></div>
-      <div><b id="r-lucro">R$ 0</b><span>de lucro de referência</span></div>
-      <div id="r-passou-caixa" hidden><b id="r-passou" class="neg">0</b><span>já passaram do meu máximo</span></div>
+      <h2>Minha lista <span>· os lotes marcados como Quero</span></h2>
+      <div class="tiles">
+        <div class="tile"><span>Lotes</span><b id="r-interesse">0</b></div>
+        <div class="tile" title="Soma dos lances atuais dos lotes marcados como Quero"><span>Em lances atuais</span><b id="r-atual">R$ 0</b></div>
+        <div class="tile" title="Soma dos lances máximos definidos"><span>Nos meus máximos</span><b id="r-max">R$ 0</b></div>
+        <div class="tile" title="Lance, comissão, ICMS, IPVA, outros custos e serviços"><span>Desembolso total</span><b id="r-capital">R$ 0</b></div>
+        <div class="tile"><span>Lucro de referência</span><b id="r-lucro">R$ 0</b></div>
+        <button class="tile" id="r-passou-caixa" aria-pressed="false" title="Mostrar só os que já passaram do meu máximo" hidden><span>Passaram do máximo</span><b id="r-passou">0</b></button>
+      </div>
     </section>
     <nav class="abas" id="abas" aria-label="Filtrar por marcação"></nav>
     <div class="barra">
-      <button class="btn" id="btn-filtros" aria-expanded="false" aria-controls="filtros">Filtros</button>
-      <input class="busca" id="f-busca" type="search" placeholder="Buscar modelo, nº do lote, cor, anotação ou tag" aria-label="Buscar">
-      <label class="ordem">Ordenar por
+      <label class="busca"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="f-busca" type="search" placeholder="Buscar modelo, nº do lote, cor ou tag" aria-label="Buscar"></label>
+      <button class="btn" id="btn-filtros" aria-expanded="false" aria-controls="filtros"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h10M17 6h4M3 12h4M11 12h10M3 18h12M19 18h2"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>Filtros<span class="bolha num" id="filtros-n" hidden></span></button>
+      <label class="ordem" title="Ordenar por"><span class="so-leitor">Ordenar por</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/></svg>
         <select id="ordem">
           <option value="lote">Nº do lote</option>
           <option value="lucro-min-d">Maior lucro no lance mínimo</option>
@@ -476,12 +579,14 @@ table.conta { width: 100%; border-collapse: collapse; }
         </select>
       </label>
       <div class="alternar" role="group" aria-label="Forma de ver os lotes">
-        <button id="v-cartoes">Cartões</button>
-        <button id="v-tabela">Tabela</button>
+        <button id="v-cartoes" title="Ver em cartões" aria-label="Ver em cartões"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></button>
+        <button id="v-tabela" title="Ver em tabela" aria-label="Ver em tabela"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
       </div>
-      <button class="btn" id="btn-exportar" title="Baixa em planilha (CSV) os lotes que estão na tela, com a conta de cada um">Exportar</button>
     </div>
-    <div class="ativos" id="ativos" aria-live="polite"></div>
+    <div class="linha-ativos">
+      <div class="ativos" id="ativos" aria-live="polite"></div>
+      <button class="btn discreto pequeno" id="btn-exportar" title="Baixa em planilha (CSV) os lotes que estão na tela, com a conta de cada um"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M12 15l-4-4M12 15l4-4M5 20h14"/></svg>Exportar</button>
+    </div>
     <div id="lista"><div class="vazio">Carregando os lotes...</div></div>
   </main>
 </div>
@@ -547,6 +652,12 @@ table.conta { width: 100%; border-collapse: collapse; }
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
+const ICONES = {
+  esq: `<path d="m15 6-6 6 6 6"/>`, dir: `<path d="m9 6 6 6-6 6"/>`, fechar: `<path d="M6 6l12 12M18 6 6 18"/>`,
+  link: `<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>`,
+  fora: `<path d="M14 5h5v5M19 5l-8 8M11 6H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-4"/>`,
+};
+const ico = nome => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome]}</svg>`;
 const MARCAS = { interesse: "Quero", talvez: "Talvez", descartado: "Descartar" };
 const MARCAS_FEITAS = { interesse: "Quero", talvez: "Talvez", descartado: "Descartado" };
 const ABAS = [["ativos", "Todos"], ["estrela", "★ Estrelas"], ["interesse", "Quero"], ["talvez", "Talvez"], ["sem", "Sem marcação"], ["descartado", "Descartados"]];
@@ -1114,7 +1225,10 @@ function desenharResumo() {
   $("r-atual").textContent = brl(q.reduce((s, l) => s + (l.valor_atual || 0), 0));
   const comMax = q.filter(l => l.lance_max != null);
   $("r-max").textContent = comMax.length ? brl(comMax.reduce((s, l) => s + l.lance_max, 0)) : "-";
-  $("r-lucro").textContent = brl(q.reduce((s, l) => s + (conta(l).lucro || 0), 0));
+  const lucroTotal = q.reduce((s, l) => s + (conta(l).lucro || 0), 0);
+  $("r-lucro").textContent = brl(lucroTotal);
+  $("r-lucro").className = lucroTotal >= 0 ? "pos" : "neg";
+  $("r-passou-caixa").setAttribute("aria-pressed", !!estado.filtros["f-passou"]);
   $("r-capital").textContent = brl(q.reduce((s, l) => s + conta(l).investido, 0));
   const passaram = q.filter(passouMax).length;
   $("r-passou-caixa").hidden = !passaram;
@@ -1130,7 +1244,8 @@ function desenharAtivos() {
   for (const [id, t] of Object.entries(NUMEROS)) if (f[id]) itens.push([id, t(f[id])]);
   for (const [id, t] of Object.entries(CHECKS)) if (f[id]) itens.push([id, t]);
   if (f["f-confianca"]) itens.push(["f-confianca", TEXTO_CONF_FILTRO[f["f-confianca"]]]);
-  $("btn-filtros").textContent = itens.length ? `Filtros (${itens.length})` : "Filtros";
+  $("filtros-n").textContent = itens.length;
+  $("filtros-n").hidden = !itens.length;
   $("filtros-ver").textContent = `Ver ${plural(visiveis.length, "lote", "lotes")}`;
   $("ativos").innerHTML = `<b class="num">${plural(visiveis.length, "lote", "lotes")}</b>` +
     itens.map(([id, t]) => `<button class="filtro-ativo" data-tirar-filtro="${id}" aria-label="Tirar filtro ${esc(t)}">${esc(t)}</button>`).join("") +
@@ -1155,36 +1270,44 @@ function margemHtml(l, c) {
 function cartao(l) {
   const foto = urlSegura(l.foto), c = conta(l), cMin = conta(l, lanceMin(l)), conf = confiancaDe(l);
   const etiquetas = [];
-  if (l.nota != null) etiquetas.push(`<span class="etiqueta nota-b ${classeNota(l.nota)}" title="Nota do grupo, de 1 a 10">Nota ${l.nota}</span>`);
   if (semChave(l)) etiquetas.push(`<span class="etiqueta atencao">Sem chave</span>`);
   if (conf === "baixa") etiquetas.push(`<span class="etiqueta atencao">Revisar FIPE</span>`);
   if (l.conservacao && l.conservacao !== "Conservado") etiquetas.push(`<span class="etiqueta">${esc(l.conservacao)}</span>`);
+  const servicos = (l.servicos || []).length, semValor = (l.servicos || []).filter(s => s.valor == null).length;
+  if (servicos) etiquetas.push(`<span class="etiqueta ${semValor ? "atencao" : ""} num" title="Serviços previstos no carro, já descontados do lucro">${plural(servicos, "serviço", "serviços")}${somaCustos(l.servicos) ? ` · ${brl(somaCustos(l.servicos))}` : ""}${semValor ? ` · ${semValor} sem valor` : ""}</span>`);
   (l.tags || "").split(",").map(t => t.trim()).filter(Boolean).forEach(t => etiquetas.push(`<span class="etiqueta tag">${esc(t)}</span>`));
   const alertas = alertasDe(l).map(([t, m]) => `<div class="alerta ${t}">${m}</div>`).join("");
-  const servicos = (l.servicos || []).length, semValor = (l.servicos || []).filter(s => s.valor == null).length;
-  const numeros = c.fipe == null
-    ? `<div class="numeros"><div><span class="rotulo">Lance atual</span><span class="valor">${brl(l.valor_atual)}</span><span class="nota-sub">${plural(l.lances, "lance", "lances")}</span></div></div>
-       <div class="sem-fipe">${conf === "nao_achei" ? "FIPE não encontrada. Abra para escolher a versão." : "FIPE ainda não consultada."}</div>`
-    : `<div class="numeros">
-         <div><span class="rotulo">Lance atual</span><span class="valor">${brl(l.valor_atual)}</span><span class="nota-sub">${plural(l.lances, "lance", "lances")}</span></div>
-         <div><span class="rotulo">Lucro de referência</span><span class="valor ${c.lucro >= 0 ? "pos" : "neg"}">${brl(c.lucro)}</span><span class="nota-sub">${l.lance_max != null ? `no meu máximo de ${brl(l.lance_max)}` : `no lance mínimo de ${brl(lanceMin(l))}`}</span></div>
+  const lance = `<div><span class="rotulo">Lance atual</span><span class="valor">${brl(l.valor_atual)}</span><span class="nota-sub">${plural(l.lances, "lance", "lances")}</span></div>`;
+  const painel = c.fipe == null
+    ? `<div class="painel num"><div class="numeros">${lance}</div>
+         <div class="sem-fipe">${conf === "nao_achei" ? "FIPE não encontrada. Abra para escolher a versão." : "FIPE ainda não consultada."}</div></div>`
+    : `<div class="painel num">
+         <div class="numeros">${lance}
+           <div><span class="rotulo">Lucro de referência</span><span class="valor ${c.lucro >= 0 ? "pos" : "neg"}">${brl(c.lucro)}</span><span class="nota-sub">${l.lance_max != null ? `no meu máximo de ${brl(l.lance_max)}` : `no lance mínimo de ${brl(lanceMin(l))}`}</span></div>
+         </div>
+         ${margemHtml(l, c)}
+         ${l.lance_max != null ? `<div class="proj-min"><span>No lance mínimo (${brl(lanceMin(l))})</span><b class="${cMin.lucro >= 0 ? "pos" : "neg"}">${brl(cMin.lucro)}</b></div>` : ""}
        </div>
-       ${l.lance_max != null ? `<div class="proj-min num"><span>Se arrematar no próximo lance mínimo (${brl(lanceMin(l))})</span><b class="${cMin.lucro >= 0 ? "pos" : "neg"}">${brl(cMin.lucro)}</b></div>` : ""}
-       ${margemHtml(l, c)}
-       <div class="legenda"><span title="${esc(TEXTO_CONFIANCA[conf] || "")}">FIPE <b>${conf === "alta" || conf === "manual" ? "" : "≈ "}${brl(c.fipe)}</b></span><span>Venda ${ajustes.pct_venda}% <b>${brl(c.venda)}</b></span><span title="Lucro de referência sobre tudo o que sai do bolso (${brl(c.investido)})">Retorno <b>${retornoTexto(c.retorno)}</b></span></div>`;
+       <div class="trinca">
+         <div title="${esc(TEXTO_CONFIANCA[conf] || "")}"><span>FIPE</span><b>${conf === "alta" || conf === "manual" ? "" : "≈ "}${brl(c.fipe)}</b></div>
+         <div><span>Venda ${ajustes.pct_venda}%</span><b>${brl(c.venda)}</b></div>
+         <div title="Lucro de referência sobre tudo o que sai do bolso (${brl(c.investido)})"><span>Retorno</span><b>${retornoTexto(c.retorno)}</b></div>
+       </div>`;
   return `<article class="cartao m-${esc(l.marcacao)}" data-id="${l.id}" tabindex="0" aria-label="Lote ${l.lote_num ?? ""}, ${esc(l.titulo)}">
     <div class="foto">${foto ? `<img loading="lazy" src="${esc(foto)}" alt="">` : `<span class="sem-foto">Sem foto no site</span>`}
       <span class="placa"><small>LOTE</small><b>${l.lote_num ?? "?"}</b></span>
-      ${l.marcacao ? `<span class="selo-marca ${esc(l.marcacao)}">${MARCAS_FEITAS[l.marcacao]}</span>` : ""}
       <button class="estrela" data-estrela aria-pressed="${!!l.estrela}" title="${l.estrela ? "Tirar a estrela" : "Marcar com estrela"}" aria-label="${l.estrela ? "Tirar a estrela do" : "Marcar com estrela o"} lote ${l.lote_num ?? ""}">${l.estrela ? "★" : "☆"}</button>
+      ${l.marcacao ? `<span class="selo-marca ${esc(l.marcacao)}">${MARCAS_FEITAS[l.marcacao]}</span>` : ""}
       ${l.qtd_fotos ? `<span class="qtd-fotos num">${plural(l.qtd_fotos, "foto", "fotos")}</span>` : ""}</div>
     <div class="miolo">
-      <div><h3>${esc(l.modelo || l.titulo)}</h3><div class="meta">${esc(metaLote(l))}</div></div>
+      <div class="titulo-linha">
+        <div><h3>${esc(l.modelo || l.titulo)}</h3><div class="meta">${esc(metaLote(l))}</div></div>
+        ${l.nota != null ? `<span class="nota-selo ${classeNota(l.nota)}" title="Nota do grupo, de 1 a 10" aria-label="Nota ${l.nota}">${l.nota}</span>` : ""}
+      </div>
       ${etiquetas.length ? `<div class="etiquetas">${etiquetas.join("")}</div>` : ""}
       ${alertas ? `<div class="alertas">${alertas}</div>` : ""}
       ${l.notas ? `<div class="nota-previa">${esc(l.notas)}</div>` : ""}
-      ${servicos ? `<div class="dica num">${plural(servicos, "serviço previsto", "serviços previstos")}${somaCustos(l.servicos) ? `: ${brl(somaCustos(l.servicos))}` : ""}${semValor ? ` · <span class="falta">${semValor} sem valor</span>` : ""}</div>` : ""}
-      ${numeros}
+      ${painel}
     </div>
     <div class="acoes">${Object.entries(MARCAS).map(([k, t]) =>
       `<button data-marca="${k}" class="${l.marcacao === k ? "on-" + k : ""}" aria-pressed="${l.marcacao === k}">${t}</button>`).join("")}</div>
@@ -1300,11 +1423,11 @@ async function desenharFicha() {
       <div class="ficha-acoes">
         <span class="salvo" id="a-salvo" aria-live="polite"></span>
         <button class="btn icone estrela-ficha" data-estrela aria-pressed="${!!l.estrela}" title="Estrela (tecla E)" aria-label="Estrela">${l.estrela ? "★" : "☆"}</button>
-        <button class="btn icone" data-acao="ant" title="Lote anterior (seta para a esquerda)" aria-label="Lote anterior" ${posicao <= 0 ? "disabled" : ""}>←</button>
-        <button class="btn icone" data-acao="prox" title="Próximo lote (seta para a direita)" aria-label="Próximo lote" ${posicao < 0 || posicao >= visiveis.length - 1 ? "disabled" : ""}>→</button>
-        <button class="btn" data-acao="link" title="Copiar o link deste lote para mandar a um sócio">Link</button>
-        ${urlSegura(l.url) ? `<a class="btn" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">Abrir no site</a>` : ""}
-        <button class="btn icone" data-acao="fechar" title="Fechar (Esc)" aria-label="Fechar ficha">✕</button>
+        <button class="btn icone" data-acao="ant" title="Lote anterior (seta para a esquerda)" aria-label="Lote anterior" ${posicao <= 0 ? "disabled" : ""}>${ico("esq")}</button>
+        <button class="btn icone" data-acao="prox" title="Próximo lote (seta para a direita)" aria-label="Próximo lote" ${posicao < 0 || posicao >= visiveis.length - 1 ? "disabled" : ""}>${ico("dir")}</button>
+        <button class="btn icone" data-acao="link" title="Copiar o link deste lote para mandar a um sócio" aria-label="Copiar o link deste lote">${ico("link")}</button>
+        ${urlSegura(l.url) ? `<a class="btn" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer" title="Abrir o lote no site do leilão" aria-label="Abrir no site do leilão">${ico("fora")}<span class="rot">Abrir no site</span></a>` : ""}
+        <button class="btn icone" data-acao="fechar" title="Fechar (Esc)" aria-label="Fechar ficha">${ico("fechar")}</button>
       </div>
     </header>
     <div class="ficha-corpo">
@@ -1358,7 +1481,7 @@ async function desenharFicha() {
           </details>
           <div class="itens" id="serv-sel"></div>
         </section>
-        <div class="dica">Atalhos: ← → trocam de lote · 1 Quero · 2 Talvez · 3 Descartar · E estrela · Esc fecha. Tudo salva sozinho.</div>
+        <div class="dica dica-atalhos">Atalhos: ← → trocam de lote · 1 Quero · 2 Talvez · 3 Descartar · E estrela · Esc fecha. Tudo salva sozinho.</div>
       </div>
     </div>`;
   $("cobertura-ficha").hidden = false;
@@ -1843,6 +1966,14 @@ function exportarCsv() {
   recado(`Planilha com ${plural(visiveis.length, "lote", "lotes")} baixada`);
 }
 $("btn-exportar").onclick = exportarCsv;
+/* O aviso de "passaram do máximo" no resumo é um atalho para ver só esses lotes. */
+$("r-passou-caixa").onclick = () => {
+  if (estado.filtros["f-passou"]) delete estado.filtros["f-passou"];
+  else { estado.filtros["f-passou"] = true; estado.marcacao = "interesse"; }
+  $("f-passou").checked = !!estado.filtros["f-passou"];
+  gravarLocal();
+  desenhar();
+};
 $("btn-premissas").onclick = abrirPremissas;
 $("p-cancelar").onclick = fecharPremissas;
 $("p-salvar").onclick = async () => {
