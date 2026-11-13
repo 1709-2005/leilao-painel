@@ -178,6 +178,8 @@ input::placeholder, textarea::placeholder { color: var(--suave); opacity: .85; }
 .etiqueta.atencao { background: var(--atencao-fundo); color: var(--atencao); }
 .etiqueta.ruim { background: var(--ruim-fundo); color: var(--ruim); }
 .etiqueta.tag { background: var(--acento-fundo); color: var(--acento); }
+.etiqueta.bom { background: var(--bom-fundo); color: var(--bom); }
+.etiqueta.nota-b { font-weight: 700; font-variant-numeric: tabular-nums; }
 .numeros { display: grid; grid-template-columns: auto auto; justify-content: space-between; gap: 8px; margin-top: auto; }
 .numeros > div:last-child { text-align: right; }
 .valor { display: block; font: 700 23px/1.1 var(--fonte-numero); font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -190,7 +192,7 @@ input::placeholder, textarea::placeholder { color: var(--suave); opacity: .85; }
 .proj-min { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 4px 8px; background: var(--superficie-2); border-radius: 4px; font-size: 12.5px; color: var(--suave); }
 .proj-min b { font: 700 15px/1.2 var(--fonte-numero); white-space: nowrap; }
 .proj-min b.pos { color: var(--bom); } .proj-min b.neg { color: var(--ruim); }
-.legenda { display: flex; justify-content: space-between; gap: 8px; font: 500 12.5px/1.2 var(--fonte-numero); color: var(--suave); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.legenda { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; font: 500 12.5px/1.2 var(--fonte-numero); color: var(--suave); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .legenda b { color: var(--texto); font-weight: 600; }
 .sem-fipe { font-size: 12.5px; color: var(--suave); }
 .nota-previa { padding: 5px 8px; background: var(--superficie-2); border-radius: 4px; font-size: 12.5px; white-space: pre-line;
@@ -288,6 +290,17 @@ table.conta { width: 100%; border-collapse: collapse; }
 .alerta.ruim { background: var(--ruim-fundo); color: var(--ruim); }
 .alerta.atencao { background: var(--atencao-fundo); color: var(--atencao); }
 #a-notas { min-height: 96px; resize: vertical; }
+
+/* nota do carro e lance teto */
+.notas-linha { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+.notas-linha button { min-height: 36px; padding: 0; background: var(--superficie); border: 1px solid var(--linha-forte); border-radius: 5px;
+  font: 600 15px/1 var(--fonte-numero); color: var(--suave); }
+.notas-linha button:hover { background: var(--superficie-2); color: var(--texto); }
+.notas-linha button[aria-pressed="true"] { background: var(--acento); border-color: var(--acento); color: var(--superficie); }
+.alvo { display: grid; gap: 6px; padding-top: 10px; border-top: 1px solid var(--linha); }
+.alvo-msg { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 13px; }
+.alvo-msg .btn { min-height: 28px; padding: 2px 10px; font-size: 12.5px; }
+.minha-lista div b.neg { color: var(--ruim); }
 
 /* serviços */
 .drop summary { display: flex; justify-content: space-between; align-items: center; min-height: 36px; padding: 6px 10px; list-style: none; cursor: pointer;
@@ -395,10 +408,18 @@ table.conta { width: 100%; border-collapse: collapse; }
     <section class="grupo">
       <h2>Dinheiro</h2>
       <label class="campo">Lance atual (R$)<div class="dupla"><input id="f-valor-de" type="number" min="0" step="500" placeholder="De" aria-label="Lance atual a partir de"><input id="f-valor-ate" type="number" min="0" step="500" placeholder="Até" aria-label="Lance atual até"></div></label>
+      <label class="campo">Lucro no lance mínimo a partir de (R$)<input id="f-lucro-lmin" type="number" step="500" placeholder="Ex.: 5000"></label>
       <label class="campo">Lucro de referência a partir de (R$)<input id="f-lucro-min" type="number" step="500" placeholder="Ex.: 5000"></label>
+      <label class="campo">Retorno a partir de (%)<input id="f-retorno-min" type="number" step="5" placeholder="Ex.: 30"></label>
       <label class="check"><input id="f-sem-lance" type="checkbox">Só lotes sem lances</label>
       <label class="check"><input id="f-subiu" type="checkbox">Lance mudou nas últimas 24 h</label>
       <label class="check"><input id="f-passou" type="checkbox">Já passou do meu máximo</label>
+      <label class="check"><input id="f-sem-max" type="checkbox">Sem lance máximo definido</label>
+    </section>
+    <section class="grupo">
+      <h2>Avaliação do grupo</h2>
+      <label class="campo">Nota a partir de<input id="f-nota-min" type="number" min="1" max="10" step="1" placeholder="1 a 10"></label>
+      <label class="check"><input id="f-sem-nota" type="checkbox">Ainda sem nota</label>
     </section>
     <section class="grupo">
       <h2>Carro</h2>
@@ -428,7 +449,9 @@ table.conta { width: 100%; border-collapse: collapse; }
       <div><b id="r-interesse">0</b><span>lotes marcados como Quero</span></div>
       <div><b id="r-atual">R$ 0</b><span>em lances atuais</span></div>
       <div><b id="r-max">R$ 0</b><span>nos meus máximos</span></div>
+      <div><b id="r-capital">R$ 0</b><span>de desembolso com taxas e serviços</span></div>
       <div><b id="r-lucro">R$ 0</b><span>de lucro de referência</span></div>
+      <div id="r-passou-caixa" hidden><b id="r-passou" class="neg">0</b><span>já passaram do meu máximo</span></div>
     </section>
     <nav class="abas" id="abas" aria-label="Filtrar por marcação"></nav>
     <div class="barra">
@@ -437,7 +460,10 @@ table.conta { width: 100%; border-collapse: collapse; }
       <label class="ordem">Ordenar por
         <select id="ordem">
           <option value="lote">Nº do lote</option>
+          <option value="lucro-min-d">Maior lucro no lance mínimo</option>
           <option value="lucro-d">Maior lucro de referência</option>
+          <option value="retorno-d">Maior retorno (%)</option>
+          <option value="nota-d">Maior nota</option>
           <option value="pctfipe">Menor % da FIPE</option>
           <option value="valor">Menor lance</option>
           <option value="valor-d">Maior lance</option>
@@ -453,6 +479,7 @@ table.conta { width: 100%; border-collapse: collapse; }
         <button id="v-cartoes">Cartões</button>
         <button id="v-tabela">Tabela</button>
       </div>
+      <button class="btn" id="btn-exportar" title="Baixa em planilha (CSV) os lotes que estão na tela, com a conta de cada um">Exportar</button>
     </div>
     <div class="ativos" id="ativos" aria-live="polite"></div>
     <div id="lista"><div class="vazio">Carregando os lotes...</div></div>
@@ -592,12 +619,27 @@ function conta(l, lanceForcado) {
   const icms = lance * (ajustes.icms_pct || 0) / 100;
   const fixos = somaCustos(ajustes.custos_fixos);
   const servicos = somaCustos(l.servicos);
-  if (fipe == null) return { fipe, lance, comissao, icms, fixos, servicos, ipva: 0, ipvaIsento: false, venda: null, lucro: null, empate: null };
+  if (fipe == null) return { fipe, lance, comissao, icms, fixos, servicos, ipva: 0, ipvaIsento: false, venda: null, lucro: null, empate: null,
+    investido: lance + comissao + icms + fixos + servicos, retorno: null };
   const ipvaIsento = ipvaIsentoDe(l), ipva = ipvaIsento ? 0 : fipe * (ajustes.ipva_pct || 0) / 100;
   const venda = fipe * ajustes.pct_venda / 100;
-  return { fipe, lance, comissao, icms, fixos, servicos, ipva, ipvaIsento, venda, lucro: venda - lance - comissao - icms - fixos - servicos - ipva,
+  // investido = tudo o que sai do bolso até o carro estar pronto para vender; retorno = lucro sobre isso.
+  const investido = lance + comissao + icms + fixos + servicos + ipva, lucro = venda - investido;
+  return { fipe, lance, comissao, icms, fixos, servicos, ipva, ipvaIsento, venda, lucro, investido, retorno: investido > 0 ? lucro / investido : null,
     empate: (venda - fixos - servicos - ipva) / (1 + ((ajustes.comissao_pct || 0) + (ajustes.icms_pct || 0)) / 100) };
 }
+const lucroNoMinimo = l => conta(l, lanceMin(l)).lucro;
+const retornoTexto = r => r == null ? "-" : `${r < 0 ? "−" : ""}${Math.abs(Math.round(r * 100))}%`;
+/* Até onde o lance pode ir deixando o lucro desejado, já no degrau de lance que o site aceita. */
+function lanceTeto(l, alvo) {
+  const c = conta(l);
+  if (c.venda == null) return null;
+  const bruto = (c.venda - c.fixos - c.servicos - c.ipva - alvo) / (1 + ((ajustes.comissao_pct || 0) + (ajustes.icms_pct || 0)) / 100);
+  const minimo = lanceMin(l), degrau = l.incremento || 0;
+  if (bruto < minimo) return { cabe: false, bruto };
+  return { cabe: true, valor: degrau ? minimo + Math.floor((bruto - minimo) / degrau) * degrau : Math.floor(bruto) };
+}
+const classeNota = n => n >= 8 ? "bom" : n >= 5 ? "atencao" : "ruim";
 /* IPVA de 2027: idade pelo ano de fabricação. Só isenta se a premissa de isenção estiver preenchida. */
 const ANO_IPVA = 2027;
 const ipvaIsentoDe = l => ajustes.ipva_isento_anos != null && l.ano_fab != null && ANO_IPVA - l.ano_fab >= ajustes.ipva_isento_anos;
@@ -702,8 +744,9 @@ function descreverAlteracao(l, campos) {
   const partes = campos.map(c => ({
     marcacao: l.marcacao ? `marcado como ${MARCAS_FEITAS[l.marcacao]}` : "marcação removida",
     lance_max: l.lance_max != null ? `lance máximo ${brl(l.lance_max)}` : "lance máximo removido",
-    valor_ref: "FIPE digitada", tags: "tags", notas: "notas", servicos: "serviços",
+    valor_ref: "FIPE digitada", tags: "tags", notas: "comentários", servicos: "serviços",
     estrela: l.estrela ? "estrela marcada" : "estrela removida",
+    nota: l.nota != null ? `nota ${l.nota}` : "nota removida",
   }[c]));
   return `Lote ${l.lote_num}: ${partes.join(", ")} (${eu})`;
 }
@@ -732,7 +775,7 @@ const apiNuvem = {
         return {
           ...l,
           marcacao: a.marcacao || "", lance_max: a.lance_max ?? null, valor_ref: a.valor_ref ?? null,
-          estrela: !!a.estrela,
+          estrela: !!a.estrela, nota: a.nota ?? null,
           tags: a.tags || "", notas: a.notas || "", servicos_json: JSON.stringify(a.servicos || []),
           atualizado_por: a.atualizado_por || null, atualizado_em: a.atualizado_em || null,
           fipe_valor: m ? m.valor : f.valor ?? null,
@@ -755,7 +798,7 @@ const apiNuvem = {
     const valores = {};
     campos.forEach(c => { valores[c] = l[c]; });
     await gravarArquivo("anotacoes.json", mapa => {
-      mapa[l.id] = { marcacao: "", estrela: false, lance_max: null, valor_ref: null, tags: "", notas: "", servicos: [], ...mapa[l.id], ...valores, atualizado_por: eu, atualizado_em: new Date().toISOString() };
+      mapa[l.id] = { marcacao: "", estrela: false, nota: null, lance_max: null, valor_ref: null, tags: "", notas: "", servicos: [], ...mapa[l.id], ...valores, atualizado_por: eu, atualizado_em: new Date().toISOString() };
       return mapa;
     }, descreverAlteracao(l, campos));
   },
@@ -830,7 +873,7 @@ function aplicarAnotacaoRemota(a) {
   const foco = document.activeElement ? document.activeElement.id : "";
   const campoTela = { lance_max: "a-max", valor_ref: "a-ref", tags: "a-tags", notas: "a-notas" };
   const sujos = l._sujos || new Set();
-  const padrao = { marcacao: "", estrela: false, lance_max: null, valor_ref: null, tags: "", notas: "", servicos: [] };
+  const padrao = { marcacao: "", estrela: false, nota: null, lance_max: null, valor_ref: null, tags: "", notas: "", servicos: [] };
   const visto = anotacoesVistas.get(l.id) || {};
   let disputado = false;
   Object.keys(padrao).forEach(c => {
@@ -848,6 +891,7 @@ function aplicarAnotacaoRemota(a) {
   atualizarItem(l);
   if (aberto === l.id) {
     atualizarMarcador(l);
+    atualizarNota(l);
     Object.entries(campoTela).forEach(([c, id]) => { if (foco !== id && $(id)) $(id).value = l[c] ?? ""; });
     atualizarConta(l);
     atualizarFolga(l);
@@ -879,6 +923,7 @@ async function carregar() {
   const novaColeta = d.coleta ? `${d.coleta.id}|${d.coleta.status}|${d.coleta.fim}` : null;
   const comDetalhe = lista => lista.filter(l => l.detalhes_em).length;
   const comFipe = lista => lista.filter(l => l.fipe_valor != null).length;
+  const primeira = !pronto;
   const mudou = !pronto || novaColeta !== ultimaColeta || lotes.length !== d.lotes.length
     || comDetalhe(lotes) !== comDetalhe(d.lotes) || comFipe(lotes) !== comFipe(d.lotes);
   meta = d;
@@ -897,12 +942,13 @@ async function carregar() {
     montarOpcoes();
     desenhar();
     if (novo && assinatura(novo) !== antes) desenharFichaSemTirarFoco();
+    if (primeira) abrirPeloEndereco();
   }
   desenharCabecalho();
   desenharAvisos();
 }
 const assinatura = l => `${l.detalhes_em}|${l.valor_atual}|${l.lances}|${l.fipe_valor}`;
-const pegarAnot = l => ({ marcacao: l.marcacao, estrela: !!l.estrela, lance_max: l.lance_max, valor_ref: l.valor_ref, tags: l.tags, notas: l.notas, servicos: l.servicos });
+const pegarAnot = l => ({ marcacao: l.marcacao, estrela: !!l.estrela, nota: l.nota ?? null, lance_max: l.lance_max, valor_ref: l.valor_ref, tags: l.tags, notas: l.notas, servicos: l.servicos });
 
 /* ------------------------------------------------ cabeçalho e avisos */
 function desenharCabecalho() {
@@ -958,9 +1004,11 @@ const SELECTS = {
 };
 const NUMEROS = {
   "f-valor-de": v => `Lance a partir de ${brl(+v)}`, "f-valor-ate": v => `Lance até ${brl(+v)}`,
-  "f-lucro-min": v => `Lucro a partir de ${brl(+v)}`, "f-ano-de": v => `Ano a partir de ${v}`, "f-ano-ate": v => `Ano até ${v}`,
+  "f-lucro-lmin": v => `Lucro no lance mínimo a partir de ${brl(+v)}`,
+  "f-lucro-min": v => `Lucro de referência a partir de ${brl(+v)}`, "f-retorno-min": v => `Retorno a partir de ${v}%`,
+  "f-ano-de": v => `Ano a partir de ${v}`, "f-ano-ate": v => `Ano até ${v}`, "f-nota-min": v => `Nota a partir de ${v}`,
 };
-const CHECKS = { "f-sem-lance": "Sem lances", "f-subiu": "Mudou em 24 h", "f-passou": "Passou do meu máximo" };
+const CHECKS = { "f-sem-lance": "Sem lances", "f-subiu": "Mudou em 24 h", "f-passou": "Passou do meu máximo", "f-sem-max": "Sem lance máximo", "f-sem-nota": "Ainda sem nota" };
 const TEXTO_CONF_FILTRO = { boa: "FIPE alta, média ou escolhida", alta: "FIPE alta ou escolhida", revisar: "FIPE a revisar" };
 const CAMPOS_TEXTO = ["f-busca", "f-confianca", ...Object.keys(SELECTS), ...Object.keys(NUMEROS)];
 
@@ -995,6 +1043,11 @@ function passaFiltros(l, ignorarMarcacao) {
   if (f["f-valor-de"] && !(l.valor_atual >= +f["f-valor-de"])) return false;
   if (f["f-valor-ate"] && !(l.valor_atual <= +f["f-valor-ate"])) return false;
   if (f["f-lucro-min"]) { const lucro = conta(l).lucro; if (lucro == null || lucro < +f["f-lucro-min"]) return false; }
+  if (f["f-lucro-lmin"]) { const lucro = lucroNoMinimo(l); if (lucro == null || lucro < +f["f-lucro-lmin"]) return false; }
+  if (f["f-retorno-min"]) { const r = conta(l).retorno; if (r == null || r * 100 < +f["f-retorno-min"]) return false; }
+  if (f["f-nota-min"] && !(l.nota != null && l.nota >= +f["f-nota-min"])) return false;
+  if (f["f-sem-nota"] && l.nota != null) return false;
+  if (f["f-sem-max"] && l.lance_max != null) return false;
   if (f["f-confianca"]) {
     const c = confiancaDe(l);
     if (f["f-confianca"] === "boa" && !["alta", "media", "manual"].includes(c)) return false;
@@ -1015,6 +1068,9 @@ function passaFiltros(l, ignorarMarcacao) {
 const ORDENS = {
   "lote": (a, b) => a.lote_num - b.lote_num,
   "lucro-d": (a, b) => (conta(b).lucro ?? -1e12) - (conta(a).lucro ?? -1e12),
+  "lucro-min-d": (a, b) => (lucroNoMinimo(b) ?? -1e12) - (lucroNoMinimo(a) ?? -1e12),
+  "retorno-d": (a, b) => (conta(b).retorno ?? -1e12) - (conta(a).retorno ?? -1e12),
+  "nota-d": (a, b) => (b.nota ?? -1) - (a.nota ?? -1) || a.lote_num - b.lote_num,
   "pctfipe": (a, b) => (fipeDe(a) ? a.valor_atual / fipeDe(a) : 1e9) - (fipeDe(b) ? b.valor_atual / fipeDe(b) : 1e9),
   "valor": (a, b) => a.valor_atual - b.valor_atual,
   "valor-d": (a, b) => b.valor_atual - a.valor_atual,
@@ -1059,6 +1115,10 @@ function desenharResumo() {
   const comMax = q.filter(l => l.lance_max != null);
   $("r-max").textContent = comMax.length ? brl(comMax.reduce((s, l) => s + l.lance_max, 0)) : "-";
   $("r-lucro").textContent = brl(q.reduce((s, l) => s + (conta(l).lucro || 0), 0));
+  $("r-capital").textContent = brl(q.reduce((s, l) => s + conta(l).investido, 0));
+  const passaram = q.filter(passouMax).length;
+  $("r-passou-caixa").hidden = !passaram;
+  $("r-passou").textContent = passaram;
 }
 function temFiltro() {
   return Object.entries(estado.filtros).some(([, v]) => v);
@@ -1095,12 +1155,13 @@ function margemHtml(l, c) {
 function cartao(l) {
   const foto = urlSegura(l.foto), c = conta(l), cMin = conta(l, lanceMin(l)), conf = confiancaDe(l);
   const etiquetas = [];
+  if (l.nota != null) etiquetas.push(`<span class="etiqueta nota-b ${classeNota(l.nota)}" title="Nota do grupo, de 1 a 10">Nota ${l.nota}</span>`);
   if (semChave(l)) etiquetas.push(`<span class="etiqueta atencao">Sem chave</span>`);
   if (conf === "baixa") etiquetas.push(`<span class="etiqueta atencao">Revisar FIPE</span>`);
   if (l.conservacao && l.conservacao !== "Conservado") etiquetas.push(`<span class="etiqueta">${esc(l.conservacao)}</span>`);
   (l.tags || "").split(",").map(t => t.trim()).filter(Boolean).forEach(t => etiquetas.push(`<span class="etiqueta tag">${esc(t)}</span>`));
   const alertas = alertasDe(l).map(([t, m]) => `<div class="alerta ${t}">${m}</div>`).join("");
-  const servicos = (l.servicos || []).length;
+  const servicos = (l.servicos || []).length, semValor = (l.servicos || []).filter(s => s.valor == null).length;
   const numeros = c.fipe == null
     ? `<div class="numeros"><div><span class="rotulo">Lance atual</span><span class="valor">${brl(l.valor_atual)}</span><span class="nota-sub">${plural(l.lances, "lance", "lances")}</span></div></div>
        <div class="sem-fipe">${conf === "nao_achei" ? "FIPE não encontrada. Abra para escolher a versão." : "FIPE ainda não consultada."}</div>`
@@ -1110,7 +1171,7 @@ function cartao(l) {
        </div>
        ${l.lance_max != null ? `<div class="proj-min num"><span>Se arrematar no próximo lance mínimo (${brl(lanceMin(l))})</span><b class="${cMin.lucro >= 0 ? "pos" : "neg"}">${brl(cMin.lucro)}</b></div>` : ""}
        ${margemHtml(l, c)}
-       <div class="legenda"><span title="${esc(TEXTO_CONFIANCA[conf] || "")}">FIPE <b>${conf === "alta" || conf === "manual" ? "" : "≈ "}${brl(c.fipe)}</b></span><span>Venda ${ajustes.pct_venda}% <b>${brl(c.venda)}</b></span></div>`;
+       <div class="legenda"><span title="${esc(TEXTO_CONFIANCA[conf] || "")}">FIPE <b>${conf === "alta" || conf === "manual" ? "" : "≈ "}${brl(c.fipe)}</b></span><span>Venda ${ajustes.pct_venda}% <b>${brl(c.venda)}</b></span><span title="Lucro de referência sobre tudo o que sai do bolso (${brl(c.investido)})">Retorno <b>${retornoTexto(c.retorno)}</b></span></div>`;
   return `<article class="cartao m-${esc(l.marcacao)}" data-id="${l.id}" tabindex="0" aria-label="Lote ${l.lote_num ?? ""}, ${esc(l.titulo)}">
     <div class="foto">${foto ? `<img loading="lazy" src="${esc(foto)}" alt="">` : `<span class="sem-foto">Sem foto no site</span>`}
       <span class="placa"><small>LOTE</small><b>${l.lote_num ?? "?"}</b></span>
@@ -1122,7 +1183,7 @@ function cartao(l) {
       ${etiquetas.length ? `<div class="etiquetas">${etiquetas.join("")}</div>` : ""}
       ${alertas ? `<div class="alertas">${alertas}</div>` : ""}
       ${l.notas ? `<div class="nota-previa">${esc(l.notas)}</div>` : ""}
-      ${servicos ? `<div class="dica num">${plural(servicos, "serviço previsto", "serviços previstos")}${somaCustos(l.servicos) ? `: ${brl(somaCustos(l.servicos))}` : ""}</div>` : ""}
+      ${servicos ? `<div class="dica num">${plural(servicos, "serviço previsto", "serviços previstos")}${somaCustos(l.servicos) ? `: ${brl(somaCustos(l.servicos))}` : ""}${semValor ? ` · <span class="falta">${semValor} sem valor</span>` : ""}</div>` : ""}
       ${numeros}
     </div>
     <div class="acoes">${Object.entries(MARCAS).map(([k, t]) =>
@@ -1132,8 +1193,8 @@ function cartao(l) {
 function tabela() {
   const th = (t, o, c = "") => `<th class="${c}">${o ? `<button data-ordem="${o}" aria-pressed="${estado.ordem === o}">${t}${estado.ordem === o ? " ▾" : ""}</button>` : t}</th>`;
   return `<div class="tabela-caixa"><table class="lotes"><thead><tr>
-    ${th("Lote", "lote")}<th><span hidden>Foto</span></th>${th("Veículo")}
-    ${th("Lance atual", "valor", "dir")}${th("Lances", "lances-d", "dir")}${th("FIPE", "", "dir")}${th(`Venda ${ajustes.pct_venda}%`, "", "dir")}${th("Lucro de ref.", "lucro-d", "dir")}${th("Lucro no lance mín.", "", "dir")}${th("% da FIPE", "pctfipe", "dir")}${th("Serviços", "", "dir")}${th("Meu máx.", "", "dir")}${th("Marcação")}${th("Notas")}
+    ${th("Lote", "lote")}<th><span hidden>Foto</span></th>${th("Veículo")}${th("Nota", "nota-d", "dir")}
+    ${th("Lance atual", "valor", "dir")}${th("Lances", "lances-d", "dir")}${th("FIPE", "", "dir")}${th(`Venda ${ajustes.pct_venda}%`, "", "dir")}${th("Lucro no lance mín.", "lucro-min-d", "dir")}${th("Lucro de ref.", "lucro-d", "dir")}${th("Retorno", "retorno-d", "dir")}${th("% da FIPE", "pctfipe", "dir")}${th("Serviços", "", "dir")}${th("Meu máx.", "", "dir")}${th("Marcação")}${th("Comentários")}
   </tr></thead><tbody>${visiveis.map(linhaTabela).join("")}</tbody></table></div>`;
 }
 function linhaTabela(l) {
@@ -1142,12 +1203,14 @@ function linhaTabela(l) {
     <td class="nlote">${l.estrela ? `<span class="no-estrela" title="Com estrela">★</span> ` : ""}${l.lote_num ?? ""}</td>
     <td>${foto ? `<img loading="lazy" src="${esc(foto)}" alt="">` : `<span class="mini-vazia"></span>`}</td>
     <td class="veic"><b>${esc(l.modelo || l.titulo)}</b><div class="meta">${esc([marcaNome(l), ANO_CURTO(l), l.cor, semChave(l) ? "Sem chave" : ""].filter(Boolean).join(" · "))}</div></td>
+    <td class="dir">${l.nota != null ? `<span class="etiqueta nota-b ${classeNota(l.nota)}">${l.nota}</span>` : "-"}</td>
     <td class="dir forte">${brl(l.valor_atual)}</td>
     <td class="dir num">${l.lances}</td>
     <td class="dir num" title="${esc(TEXTO_CONFIANCA[conf] || "")}">${c.fipe == null ? "-" : `${conf === "alta" || conf === "manual" ? "" : `<span class="aprox">≈</span> `}${brl(c.fipe)}`}</td>
     <td class="dir num">${brl(c.venda)}</td>
-    <td class="dir forte ${c.lucro == null ? "" : c.lucro >= 0 ? "pos" : "neg"}">${brl(c.lucro)}</td>
-    <td class="dir num ${cMin.lucro == null ? "" : cMin.lucro >= 0 ? "pos" : "neg"}">${brl(cMin.lucro)}</td>
+    <td class="dir forte ${cMin.lucro == null ? "" : cMin.lucro >= 0 ? "pos" : "neg"}">${brl(cMin.lucro)}</td>
+    <td class="dir num ${c.lucro == null ? "" : c.lucro >= 0 ? "pos" : "neg"}">${brl(c.lucro)}</td>
+    <td class="dir num ${c.retorno == null ? "" : c.retorno >= 0 ? "pos" : "neg"}">${retornoTexto(c.retorno)}</td>
     <td class="dir num">${c.fipe ? Math.round(l.valor_atual / c.fipe * 100) + "%" : "-"}</td>
     <td class="dir num">${l.servicos && l.servicos.length ? `${l.servicos.length}${somaCustos(l.servicos) ? ` · ${brl(somaCustos(l.servicos))}` : ""}` : "-"}</td>
     <td class="dir num">${l.lance_max != null ? `<span class="${passouMax(l) ? "neg" : ""}">${brl(l.lance_max)}</span>` : "-"}</td>
@@ -1165,15 +1228,48 @@ function atualizarItem(l) {
 }
 
 /* ------------------------------------------------ ficha do lote */
-async function abrir(id) {
+/* O endereço aponta para o lote aberto (#lote=123): dá para mandar o link a um sócio,
+   e o Voltar do celular fecha a ficha em vez de sair do painel. */
+async function abrir(id, { peloEndereco = false } = {}) {
+  const l = lotes.find(x => x.id === id);
+  if (l && l.lote_num != null && !peloEndereco) {
+    try {
+      if (aberto == null) history.pushState({ ficha: true }, "", `#lote=${l.lote_num}`);
+      else history.replaceState(history.state, "", `#lote=${l.lote_num}`);
+    } catch {}
+  }
   aberto = id;
   fotoAtual = 0;
   await desenharFicha();
 }
 function fechar() {
+  if (history.state && history.state.ficha) { history.back(); return; } // o popstate fecha de vez
+  fecharDeVez();
+}
+function fecharDeVez() {
   aberto = null;
   $("cobertura-ficha").hidden = true;
+  $("tela-cheia").hidden = true;
   document.body.classList.remove("travado");
+  if (location.hash) { try { history.replaceState(null, "", location.pathname + location.search); } catch {} }
+}
+function abrirPeloEndereco() {
+  const m = /^#lote=(\d+)$/.exec(location.hash);
+  const l = m && lotes.find(x => x.lote_num === +m[1]);
+  if (l && aberto !== l.id) abrir(l.id, { peloEndereco: true });
+}
+window.addEventListener("hashchange", abrirPeloEndereco);
+window.addEventListener("popstate", () => {
+  if (aberto && !/^#lote=\d+$/.test(location.hash)) fecharDeVez();
+  else abrirPeloEndereco();
+});
+async function copiarLink() {
+  const l = lotes.find(x => x.id === aberto);
+  if (!l) return;
+  try {
+    await navigator.clipboard.writeText(`${location.origin}${location.pathname}#lote=${l.lote_num}`);
+    recado(`Link do lote ${l.lote_num} copiado`);
+  } catch { recado("Não consegui copiar. O link é o endereço que está na barra do navegador."); }
 }
 async function obterDetalhe(id) {
   if (!cacheDetalhe[id]) cacheDetalhe[id] = await API.lote(id);
@@ -1206,6 +1302,7 @@ async function desenharFicha() {
         <button class="btn icone estrela-ficha" data-estrela aria-pressed="${!!l.estrela}" title="Estrela (tecla E)" aria-label="Estrela">${l.estrela ? "★" : "☆"}</button>
         <button class="btn icone" data-acao="ant" title="Lote anterior (seta para a esquerda)" aria-label="Lote anterior" ${posicao <= 0 ? "disabled" : ""}>←</button>
         <button class="btn icone" data-acao="prox" title="Próximo lote (seta para a direita)" aria-label="Próximo lote" ${posicao < 0 || posicao >= visiveis.length - 1 ? "disabled" : ""}>→</button>
+        <button class="btn" data-acao="link" title="Copiar o link deste lote para mandar a um sócio">Link</button>
         ${urlSegura(l.url) ? `<a class="btn" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">Abrir no site</a>` : ""}
         <button class="btn icone" data-acao="fechar" title="Fechar (Esc)" aria-label="Fechar ficha">✕</button>
       </div>
@@ -1239,13 +1336,19 @@ async function desenharFicha() {
         <section class="bloco">
           <h3>${NUVEM ? "Anotações do grupo" : "Minhas anotações"}</h3>
           <div class="dica" id="a-autor" hidden></div>
+          <div class="campo" role="group" aria-label="Nota do carro, de 1 a 10">Nota do carro (toque de novo na nota para tirar)
+            <div class="notas-linha" id="a-nota">${htmlNota(l)}</div></div>
           <div class="dupla">
             <label class="campo">Meu lance máximo (R$)<input id="a-max" type="number" min="0" step="100" value="${l.lance_max ?? ""}"></label>
             <label class="campo">Digitar FIPE (opcional, R$)<input id="a-ref" type="number" min="0" step="100" value="${l.valor_ref ?? ""}" placeholder="Usa a automática"></label>
           </div>
           <div class="dica num" id="a-folga"></div>
+          <div class="alvo">
+            <label class="campo">Lucro que eu quero por carro (R$)<input id="a-alvo" type="number" min="0" step="500" value="${estado.lucroAlvo ?? ""}" placeholder="Ex.: 5000"></label>
+            <div class="alvo-msg num" id="alvo-msg" aria-live="polite"></div>
+          </div>
           <label class="campo">Tags (separe por vírgula)<input id="a-tags" value="${esc(l.tags)}" placeholder="vistoriar, revenda"></label>
-          <label class="campo">Notas<textarea id="a-notas" placeholder="O que você quiser anotar sobre este lote">${esc(l.notas)}</textarea></label>
+          <label class="campo">Comentários<textarea id="a-notas" placeholder="O que você quiser anotar sobre este lote">${esc(l.notas)}</textarea></label>
         </section>
         <section class="bloco">
           <h3>O que fazer no carro</h3>
@@ -1296,7 +1399,8 @@ function htmlConta(l, d) {
     ${l.servicos.length ? l.servicos.map(s => `<tr><td>− ${esc(s.nome)}</td><td>${s.valor == null ? falta("sem valor") : brl(s.valor)}</td></tr>`).join("") : `<tr><td>− Serviços no carro</td><td>${brl(0)}</td></tr>`}
     <tr class="total ${c.lucro >= 0 ? "pos" : "neg"}"><td>Lucro de referência</td><td>${brl(c.lucro)}</td></tr>
   </table>
-  ${l.lance_max != null ? `<div class="dica num">No próximo lance mínimo (${brl(lanceMin(l))}) o lucro seria <b>${brl(conta(l, lanceMin(l)).lucro)}</b>.</div>` : ""}
+  <div class="dica num">Desembolso total de ${brl(c.investido)}, com retorno de <b>${retornoTexto(c.retorno)}</b> sobre ele.</div>
+  ${l.lance_max != null ? `<div class="dica num">No próximo lance mínimo (${brl(lanceMin(l))}) o lucro seria <b>${brl(lucroNoMinimo(l))}</b>.</div>` : ""}
   <div class="dica num">Já com os serviços previstos. A conta zera num lance de ${brl(c.empate)}.
     ${contaFaltaDados() ? `<button class="link" data-abrir-premissas>Preencher o que falta</button>` : ""}</div>`;
 }
@@ -1304,7 +1408,47 @@ function atualizarConta(l) {
   const el = $("conta-g");
   if (el) el.innerHTML = htmlConta(l, cacheDetalhe[l.id]);
 }
+const htmlNota = l => Array.from({ length: 10 }, (_, i) => `<button data-nota="${i + 1}" aria-pressed="${l.nota === i + 1}" aria-label="Nota ${i + 1}">${i + 1}</button>`).join("");
+function atualizarNota(l) {
+  const el = $("a-nota");
+  if (el && aberto === l.id) el.innerHTML = htmlNota(l);
+}
+function darNota(id, nota) {
+  const l = lotes.find(x => x.id === id);
+  if (!l) return;
+  l.nota = l.nota === nota ? null : nota;
+  salvarDepois(l, "nota");
+  atualizarNota(l);
+  atualizarItem(l);
+}
+/* Lance teto: até onde dá para ir e ainda sobrar o lucro que eu quero. O alvo fica só neste aparelho. */
+function atualizarAlvo(l) {
+  const el = $("alvo-msg");
+  if (!el) return;
+  const alvo = estado.lucroAlvo;
+  if (alvo == null) { el.innerHTML = `<span class="dica">Digite o lucro desejado para ver até onde o lance pode ir. Fica guardado só neste aparelho e vale para todos os carros.</span>`; return; }
+  const teto = lanceTeto(l, alvo);
+  if (!teto) { el.innerHTML = `<span class="dica">Sem a FIPE não dá para calcular o lance teto.</span>`; return; }
+  if (!teto.cabe) {
+    el.innerHTML = `<span class="falta">Nem o lance mínimo de agora (${brl(lanceMin(l))}) deixa ${brl(alvo)} de lucro.${teto.bruto > 0 ? ` O lance teria de ficar em ${brl(teto.bruto)}.` : ""}</span>`;
+    return;
+  }
+  el.innerHTML = `<span>Para lucrar ${brl(alvo)}, o lance vai até <b>${brl(teto.valor)}</b>.</span>` +
+    (l.lance_max === teto.valor ? `<span class="dica">É o seu máximo.</span>` : `<button class="btn" data-acao="usar-teto" data-valor="${teto.valor}">Usar como meu máximo</button>`);
+}
+function usarTeto(valor) {
+  const l = lotes.find(x => x.id === aberto);
+  if (!l) return;
+  l.lance_max = valor;
+  if ($("a-max")) $("a-max").value = valor;
+  salvarDepois(l, "lance_max");
+  atualizarConta(l);
+  atualizarFolga(l);
+  $("alertas-g").innerHTML = htmlAlertas(l);
+  atualizarItem(l);
+}
 function atualizarFolga(l) {
+  atualizarAlvo(l);
   const el = $("a-folga");
   if (!el) return;
   const fipe = fipeDe(l), p = [];
@@ -1370,6 +1514,8 @@ function alternarServico(l, nome, ligado) {
   salvarDepois(l, "servicos");
   atualizarResumoServicos(l);
   desenharServicosMarcados(l);
+  atualizarConta(l); // a conta da ficha acompanha os serviços na hora
+  atualizarFolga(l);
   atualizarItem(l);
 }
 async function salvarAjustes(novos) {
@@ -1557,6 +1703,8 @@ document.addEventListener("click", e => {
     alternarEstrela(dono ? +dono.dataset.id : aberto);
     return;
   }
+  const nb = e.target.closest("[data-nota]");
+  if (nb) { darNota(aberto, +nb.dataset.nota); return; }
   const b = e.target.closest("[data-marca]");
   if (b) {
     const dono = b.closest("#lista [data-id]");
@@ -1569,7 +1717,7 @@ document.addEventListener("click", e => {
   if (o) { estado.ordem = o.dataset.ordem; gravarLocal(); desenhar(); return; }
   const a = e.target.closest("[data-acao]");
   if (a) {
-    ({ ant: () => vizinho(-1), prox: () => vizinho(1), fechar,
+    ({ ant: () => vizinho(-1), prox: () => vizinho(1), fechar, link: copiarLink, "usar-teto": () => usarTeto(+a.dataset.valor),
        "novo-serv": () => adicionarServicoNovo(lotes.find(x => x.id === aberto)) })[a.dataset.acao]();
     return;
   }
@@ -1594,6 +1742,14 @@ document.addEventListener("input", e => {
     l.servicos[+p.servI].valor = e.target.value === "" ? null : +e.target.value;
     salvarDepois(l, "servicos");
     $("serv-total").textContent = brl(somaCustos(l.servicos));
+    atualizarConta(l);
+    atualizarFolga(l);
+    return;
+  }
+  if (e.target.id === "a-alvo") {
+    estado.lucroAlvo = e.target.value === "" ? null : +e.target.value;
+    gravarLocal();
+    atualizarAlvo(l);
     return;
   }
   const campo = { "a-max": "lance_max", "a-ref": "valor_ref", "a-tags": "tags", "a-notas": "notas" }[e.target.id];
@@ -1661,6 +1817,32 @@ $("btn-filtros").onclick = $("filtros-ver").onclick = () => {
   gravarLocal();
   aplicarMenuFiltros();
 };
+/* Planilha dos lotes que estão na tela, no formato que o Excel em português abre direto. */
+function montarCsv(lista) {
+  const num = v => v == null ? "" : String(Math.round(v * 100) / 100).replace(".", ",");
+  const txt = v => `"${String(v ?? "").replace(/"/g, '""').replace(/\r?\n/g, " ")}"`;
+  const cabecalho = ["Lote", "Veículo", "Marca", "Ano", "Cor", "Nota", "Marcação", "Estrela", "Lance atual", "Lances", "Lance mínimo agora", "Meu máximo",
+    "FIPE", `Venda ${ajustes.pct_venda}%`, "Lucro no lance mínimo", "Lucro de referência", "Retorno %", "Desembolso total", "Serviços (R$)", "Serviços", "Comentários", "Link"];
+  const linhas = lista.map(l => {
+    const c = conta(l);
+    return [l.lote_num ?? "", txt(l.modelo || l.titulo), txt(marcaNome(l)), txt(ANO_CURTO(l)), txt(l.cor), l.nota ?? "", txt(MARCAS_FEITAS[l.marcacao] || ""), l.estrela ? "Sim" : "",
+      num(l.valor_atual), l.lances ?? "", num(lanceMin(l)), num(l.lance_max), num(c.fipe), num(c.venda), num(lucroNoMinimo(l)), num(c.lucro),
+      c.retorno == null ? "" : num(c.retorno * 100), num(c.investido), num(somaCustos(l.servicos)), txt((l.servicos || []).map(s => s.nome).join(", ")), txt(l.notas), txt(urlSegura(l.url))].join(";");
+  });
+  return "﻿" + [cabecalho.map(txt).join(";"), ...linhas].join("\r\n") + "\r\n";
+}
+function exportarCsv() {
+  if (!visiveis.length) { recado("Não há lotes na tela para exportar."); return; }
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([montarCsv(visiveis)], { type: "text/csv;charset=utf-8" }));
+  link.download = `leilao-${agoraLocal().slice(0, 10)}.csv`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  recado(`Planilha com ${plural(visiveis.length, "lote", "lotes")} baixada`);
+}
+$("btn-exportar").onclick = exportarCsv;
 $("btn-premissas").onclick = abrirPremissas;
 $("p-cancelar").onclick = fecharPremissas;
 $("p-salvar").onclick = async () => {
